@@ -371,18 +371,6 @@
 
 \newcommand{\thescene}{\arabic{scenecounter}}
 
-\newcommand{\Scene}[1][]{
-	\if@inscene
-		\show\@ne
-		\end{scene}
-		\global\@inscenefalse
-	\else
-		\show\tw@
-		\global\@inscenetrue
-		\begin{scene}[#1]
-	\fi
-}
-
 \NewEnviron{scene}[1][]{
 	\stepcounter{scenecounter}	
 
@@ -390,7 +378,7 @@
 	\def\@scenecharlist{\scenecastfont\@gobbletwo}% \@gobbletwo will remove the first ",\ "
 	\let\@parsableitem\@empty
 
-	\sbox0{}%\BODY}% will not be typeset but "executed" and stored in block 0
+	\sbox0{\BODY}% will not be typeset but "executed" and stored in block 0
 	\let\@parsableitem\item
 	
 	\@scene{#1}
