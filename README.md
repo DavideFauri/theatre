@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ## theatre
+=======
+##theatre
+>>>>>>> 2aca29b026e2eabe522aee0d8ddb5854f79b21ee
 
 `theatre.cls` is a LaTeX2ε class designed to easily produce stage-play scripts for actors.
 Since it's rare for playwrights to also be experts of programming, most of the LaTeX-like macros and environments are conveniently hidden behind simple commands: as a result, the `.tex` file should be readable even by the uninitiated.

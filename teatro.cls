@@ -152,9 +152,9 @@
 		\noexpand			\fi
 		%
 		%\itemfalse
-		\unexpanded{			\@parsableitem[\namefont#1]}
+		\unexpanded{			\@parsableitem[\namefont#1]\@setupparen (test)}
 	}
-	
+
 	% defines \timdo, expanding (just) the tokens that require totalcharcounter
 	\global\expandafter\edef\csname#2\@ction\endcsname{%
 		%
@@ -169,7 +169,7 @@
 		%\else
 		%\item\itemtrue
 		%\fi
-		\unexpanded{			\@parsableitem({\namefont#1})\xspace}
+		\unexpanded{			\@parsableitem{\namefont#1}\xspace}
 	}
 	
 	\settowidth{\@thischarlength}{\namefont#1}	% get max length to properly indent
@@ -269,6 +269,7 @@
 }
 
 \newcommand{\@castlist}{
+	\@cleanupparen
 	\phantomsection							% for hyperref purposes
 	\addcontentsline{toc}{chapter}{\casttitlename}
 	\castlistmark{\casttitlename}					% mark for headers
@@ -321,7 +322,8 @@
 }
 
 \newcommand\@openact{
-	\@cleanupscene									% closes the trivlist
+	\@cleanupscene
+	\@cleanupparen
 	\if@openright	\clearpage{\thispagestyle{empty}\cleardoublepage}
 	\else			\clearpage
 	\fi
@@ -375,6 +377,8 @@
 	\stepcounter{scenecounter}	
 
 	\@resetcharflags
+	\@cleanupparen
+	
 	\def\@scenecharlist{\scenecastfont\@gobbletwo}% \@gobbletwo will remove the first ",\ "
 	\let\@parsableitem\@empty
 
@@ -424,6 +428,22 @@
 	\par\nobreak\vskip\aftersceneskip}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%		Parentheticals
+
+\def\@setupparen{
+	\catcode`\(=13
+	\catcode`\)=13
+}
+
+\def\@cleanupparen{
+	\catcode`\(=12
+	\catcode`\)=12
+}
+
+\@setupparen
+\def(#1){{\char`\(\itshape#1\char`\)}}
+\@cleanupparen
+
 %%%%%%%%%%%%%%%%%%%%%%%		Stage directions
 
 \newcommand{\stagedir}{
@@ -450,9 +470,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%		End of script
 
 \AtEndDocument{
-	\if@inscene
-		\end{scene}
-	\fi
 	\vspace{1.6ex}
 	\centering
 	\textsc{The End}
