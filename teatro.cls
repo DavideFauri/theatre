@@ -5,6 +5,7 @@
 %\@ifundefined{if@openright}{\newif\if@openright}{} 
 
 \RequirePackage{etoolbox, environ}	% for dynamic list of chars in each scene
+\RequirePackage{xparse}
 %\RequirePackage{fancyhdr}
 %\RequirePackage{extramarks}
 \RequirePackage{xspace}	% add space after macro when appropriate
@@ -20,6 +21,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%		Font styles
 
 \newcommand{\namefont}{\scshape}
+\newcommand{\starfont}{\scshape\itshape}
 \newcommand{\actionfont}{}
 \newcommand{\stagedirfont}{}
 
@@ -34,7 +36,6 @@
 \newcommand{\scenetitlefont}{\scshape\large}
 \newcommand{\scenecastfont}{\scshape}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%		Counters
 
 \newcounter{castlistcounter}
@@ -47,7 +48,6 @@
 \newcounter{flagstemp}
 
 %%%%%%%%%%%%%%%%%%%%%%%		Flags
-
 
 %%%%%%%%%%%%%%%%%%%%%%%		Title
 
@@ -83,7 +83,10 @@
 % \character[a young boy]{Timothy}{tim}
 % \character{Timothy}{tim}
 
-\newcommand{\character}{
+\NewDocumentCommand{\character}{s}{%
+	\IfBooleanTF{#1}%						% if starred, use special font
+		{\gdef\@thischarfont{\starfont}}%
+		{\gdef\@thischarfont{\namefont}}
 	\@ifnextchar[
 		{\char@cast}			% add to cast list
 		{\char@simplemacros}	% just create macros
@@ -136,7 +139,12 @@
 		\noexpand			\iffalse}
 	% creates globally \ifenteredcharVIII
 	\@nameuse{enteredchar\Roman{totalcharcounter}false}
-
+	%
+	% specifies the font for this character
+	\global\expandafter\edef\csname @char\Roman{totalcharcounter}font\endcsname{
+		\expandafter\noexpand\@thischarfont
+	}
+	%
 	% defines \tim, expanding (just) the tokens that require totalcharcounter
 	\global\expandafter\edef\csname#2\endcsname{%
 		%
@@ -149,7 +157,9 @@
 		\noexpand			\fi
 		%
 		%\itemfalse
-		\unexpanded{			\@parsableitem[\namefont#1]}
+		\unexpanded{			\@parsableitem[}%
+		\expandafter\noexpand\csname @char\Roman{totalcharcounter}font\endcsname
+		\unexpanded{#1]}
 	}
 
 	% defines \timdo, expanding (just) the tokens that require totalcharcounter
@@ -166,9 +176,11 @@
 		%\else
 		%\item\itemtrue
 		%\fi
-		\unexpanded{			\@parsableitem{\namefont#1}\xspace}
+		\unexpanded{			\@parsableitem\bgroup}%
+		\expandafter\noexpand\csname @char\Roman{totalcharcounter}font\endcsname
+		\unexpanded{#1\egroup\xspace}
 	}
-	
+
 	\settowidth{\@thischarlength}{\namefont#1}	% get max length to properly indent
 	\ifnum\@thischarlength>\maxcharlength
 		\setlength{\maxcharlength}{\@thischarlength}
@@ -182,7 +194,10 @@
 %		\gcharacter{Eric}{eric}
 %	}
 
-\newcommand\gcharacter{
+\NewDocumentCommand{\gcharacter}{s}{%
+	\IfBooleanTF{#1}%						% if starred, use special font
+		{\gdef\@thischarfont{\starfont}}%
+		{\gdef\@thischarfont{\namefont}}
 	\@ifnextchar[
 		{\gchar@cast}
 		{\gchar@cast[]}			% add empty [full name] if absent
