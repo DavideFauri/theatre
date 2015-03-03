@@ -49,8 +49,6 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%		Flags
 
-\newif\if@inscene
-\newif\if@instagedir
 
 %%%%%%%%%%%%%%%%%%%%%%%		Title
 
@@ -152,7 +150,7 @@
 		\noexpand			\fi
 		%
 		%\itemfalse
-		\unexpanded{			\@parsableitem[\namefont#1]\@setupparen (test)}
+		\unexpanded{			\@parsableitem[\namefont#1]}
 	}
 
 	% defines \timdo, expanding (just) the tokens that require totalcharcounter
@@ -269,7 +267,6 @@
 }
 
 \newcommand{\@castlist}{
-	\@cleanupparen
 	\phantomsection							% for hyperref purposes
 	\addcontentsline{toc}{chapter}{\casttitlename}
 	\castlistmark{\casttitlename}					% mark for headers
@@ -322,8 +319,6 @@
 }
 
 \newcommand\@openact{
-	\@cleanupscene
-	\@cleanupparen
 	\if@openright	\clearpage{\thispagestyle{empty}\cleardoublepage}
 	\else			\clearpage
 	\fi
@@ -377,7 +372,6 @@
 	\stepcounter{scenecounter}	
 
 	\@resetcharflags
-	\@cleanupparen
 	
 	\def\@scenecharlist{\scenecastfont\@gobbletwo}% \@gobbletwo will remove the first ",\ "
 	\let\@parsableitem\@empty
@@ -392,12 +386,6 @@
 	\end{trivlist}
 ]
 
-\newcommand\@cleanupscene{
-	\if@inscene
-		\end{scene}
-		\global\@inscenefalse
-	\fi
-}
 
 \newcommand\@scene[1]{
 	\phantomsection								% for hyperref
@@ -430,37 +418,10 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%		Parentheticals
 
-\def\@setupparen{
-	\catcode`\(=13
-	\catcode`\)=13
-}
 
-\def\@cleanupparen{
-	\catcode`\(=12
-	\catcode`\)=12
-}
-
-\@setupparen
-\def(#1){{\char`\(\itshape#1\char`\)}}
-\@cleanupparen
 
 %%%%%%%%%%%%%%%%%%%%%%%		Stage directions
 
-\newcommand{\stagedir}{
-	\item
-	\itemtrue
-}
-
-\newcommand\@setupstagedir{
-	\if@instagedir
-	\else
-		\item
-		\@instagedirtrue
-	\fi}
-\newcommand\@cleanupstagedir{
-	\if@instagedir
-		\@instagedirfalse
-	\fi}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%		Opening and technical directions
