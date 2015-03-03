@@ -8,8 +8,7 @@
 %\RequirePackage{fancyhdr}
 %\RequirePackage{extramarks}
 \RequirePackage{xspace}	% add space after macro when appropriate
-\RequirePackage{tikz}
-\usetikzlibrary{decorations.pathreplacing}
+%\RequirePackage{tikz}
 
 %%%%%%%%%%%%%%%%%%%%%%%		Options
 
@@ -221,12 +220,9 @@
 		\end{lrbox}
 		
 		\parbox{\castnamewidth}{
+			\hfuzz=\wd\tbox		% ignore overfull warnings
 			\usebox{\tbox}%		% comment to avoid spurious space
-% $\left.\rule{0pt}{\ht\tbox}\right\}$	<---- if tikz is unavailable, use this
-			\tikz[very thick, overlay,decoration={brace, amplitude=0.6em}]{
-				\draw[decorate] (0,\ht\tbox) --++ (0,-2*\ht\tbox+6pt);
-				\draw (current bounding box.north west) rectangle (current bounding box.south east);
-			}
+ 			$\left.\rule{0pt}{\ht\tbox}\right\}$	
 		}%						% comment to avoid spurious space
 	}
 }{}
@@ -369,8 +365,7 @@
 \newcommand{\thescene}{\arabic{scenecounter}}
 
 \NewEnviron{scene}[1][]{
-	\stepcounter{scenecounter}	
-
+	\stepcounter{scenecounter}
 	\@resetcharflags
 	
 	\def\@scenecharlist{\scenecastfont\@gobbletwo}% \@gobbletwo will remove the first ",\ "
