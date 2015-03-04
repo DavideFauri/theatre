@@ -30,6 +30,7 @@
 
 \newcommand{\namefont}{\scshape}
 \newcommand{\starfont}{\bf\scshape}
+
 \newcommand{\actionfont}{}
 \newcommand{\stagedirfont}{}
 
@@ -42,7 +43,7 @@
 
 \newcommand{\scenetitlename}{Scene}
 \newcommand{\scenetitlefont}{\scshape\large}
-\newcommand{\scenecastfont}{\scshape}
+\newcommand{\scenecastfont}{\small}
 
 %%%%%%%%%%%%%%%%%%%%%%%		Counters
 
@@ -122,7 +123,7 @@
 	
 	% first expand the totalcharcounter, then pass it as argument
 	\edef\@Romanchar{\Roman{totalcharcounter}}
-	\expandafter\char@fullmacros\expandafter{\@Romanchar}{#3}{#4}
+	\expandafter\char@fullmacros\expandafter{\@Romanchar}{\uppercase{#3}}{#4}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%		Character macros
@@ -245,7 +246,7 @@
 
 	% first expand the totalcharcounter, then pass it as argument
 	\edef\@Romanchar{\Roman{totalcharcounter}}
-	\expandafter\char@fullmacros\expandafter{\@Romanchar}{#2}{#3}
+	\expandafter\char@fullmacros\expandafter{\@Romanchar}{\uppercase{#2}}{#3}
 	}
 
 \newsavebox{\tbox}
@@ -496,3 +497,4 @@
 	\fi
 	\setcounter{charstemp}{0}%
 }
+
