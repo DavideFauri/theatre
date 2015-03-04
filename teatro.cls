@@ -21,7 +21,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%		Font styles
 
 \newcommand{\namefont}{\scshape}
-\newcommand{\starfont}{\scshape\itshape}
+\newcommand{\starfont}{\bf\scshape}
 \newcommand{\actionfont}{}
 \newcommand{\stagedirfont}{}
 
@@ -84,9 +84,9 @@
 % \character{Timothy}{tim}
 
 \NewDocumentCommand{\character}{s}{%
-	\IfBooleanTF{#1}%						% if starred, use special font
-		{\gdef\@thischarfont{\starfont}}%
-		{\gdef\@thischarfont{\namefont}}
+	\IfBooleanTF{#1}						% if starred, use special font
+		{\global\let\@thischarfont\starfont}
+		{\global\let\@thischarfont\namefont}
 	\@ifnextchar[
 		{\char@cast}			% add to cast list
 		{\char@simplemacros}	% just create macros
@@ -110,7 +110,10 @@
 	\fi
 	
 	\@namedef{description@\Roman{castlistcounter}}{#2}
-	\char@fullmacros{#3}{#4}		% create macros
+	
+	% first expand the totalcharcounter, then pass it as argument
+	\edef\@Romanchar{\Roman{totalcharcounter}}
+	\expandafter\char@fullmacros\expandafter{\@Romanchar}{#3}{#4}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%		Character macros
@@ -126,62 +129,33 @@
 	}
 }
 
-\def\char@fullmacros#1#2{
-	% creates globally \enteredcharVIIItrue
-	\global\expandafter\edef\csname enteredchar\Roman{totalcharcounter}true\endcsname{
-		\unexpanded{			\global\let}
-							\csname ifenteredchar\Roman{totalcharcounter}\endcsname
-		\noexpand			\iftrue}
-	% creates globally \enteredcharVIIIfalse
-	\global\expandafter\edef\csname enteredchar\Roman{totalcharcounter}false\endcsname{
-		\unexpanded{			\global\let}
-							\csname ifenteredchar\Roman{totalcharcounter}\endcsname
-		\noexpand			\iffalse}
-	% creates globally \ifenteredcharVIII
-	\@nameuse{enteredchar\Roman{totalcharcounter}false}
-	%
+\def\char@fullmacros#1#2#3{
+
 	% specifies the font for this character
-	\global\expandafter\edef\csname @char\Roman{totalcharcounter}font\endcsname{
-		\expandafter\noexpand\@thischarfont
-	}
-	%
+	\global\expandafter\let\csname @char#1font\endcsname\@thischarfont
+	
 	% defines \tim, expanding (just) the tokens that require totalcharcounter
-	\global\expandafter\edef\csname#2\endcsname{%
-		%
+	\global\@namedef{#3}{%
 		% if it's the first time that the macro is called in the scene, append char name to list
-		% do not use \csname but @nameuse, as it correctly delays expansion
-		\noexpand			\unless
-		\expandafter\noexpand	\csname ifenteredchar\Roman{totalcharcounter}\endcsname
-		\expandafter\noexpand	\csname enteredchar\Roman{totalcharcounter}true\endcsname
-		\unexpanded{			\gappto\@scenecharlist{,\ #1}				}
-		\noexpand			\fi
-		%
-		%\itemfalse
-		\unexpanded{			\@parsableitem[}%
-		\expandafter\noexpand\csname @char\Roman{totalcharcounter}font\endcsname
-		\unexpanded{#1]}
+		\ifcsname @char#1enters\endcsname
+		\else
+			\global\@namedef{@char#1enters}{\gappto\@scenecharlist{,\ #2}}
+		\fi
+		\@parsableitem[\@nameuse{@char#1font}#2]
 	}
 
 	% defines \timdo, expanding (just) the tokens that require totalcharcounter
-	\global\expandafter\edef\csname#2\@ction\endcsname{%
-		%
+	\global\@namedef{#3\@ction}{
+		
 		% if it's the first time that the macro is called in the scene, append char name to list
-		\noexpand			\unless
-		\expandafter\noexpand	\csname ifenteredchar\Roman{totalcharcounter}\endcsname
-		\expandafter\noexpand	\csname enteredchar\Roman{totalcharcounter}true\endcsname
-		\unexpanded{			\gappto\@scenecharlist{,\ #1}				}
-		\noexpand			\fi
-		%
-		%\ifitem
-		%\else
-		%\item\itemtrue
-		%\fi
-		\unexpanded{			\@parsableitem\bgroup}%
-		\expandafter\noexpand\csname @char\Roman{totalcharcounter}font\endcsname
-		\unexpanded{#1\egroup\xspace}
+		\ifcsname @char#1enters\endcsname
+		\else
+			\global\@namedef{@char#1enters}{\gappto\@scenecharlist{,\ #2}}
+		\fi
+		\@parsableitem{\@nameuse{@char#1font}#2}\xspace
 	}
 
-	\settowidth{\@thischarlength}{\namefont#1}	% get max length to properly indent
+	\settowidth{\@thischarlength}{\@nameuse{@char#1font}#2}	% get max length to properly indent
 	\ifnum\@thischarlength>\maxcharlength
 		\setlength{\maxcharlength}{\@thischarlength}
 	\fi
@@ -195,9 +169,9 @@
 %	}
 
 \NewDocumentCommand{\gcharacter}{s}{%
-	\IfBooleanTF{#1}%						% if starred, use special font
-		{\gdef\@thischarfont{\starfont}}%
-		{\gdef\@thischarfont{\namefont}}
+	\IfBooleanTF{#1}						% if starred, use special font
+		{\global\let\@thischarfont\starfont}
+		{\global\let\@thischarfont\namefont}
 	\@ifnextchar[
 		{\gchar@cast}
 		{\gchar@cast[]}			% add empty [full name] if absent
@@ -214,8 +188,10 @@
 		\global\@namedef{gpersona@\Roman{castlistcounter}@\roman{group@\Roman{castlistcounter}}}{{\castfont#1}}
 	\fi
 
-	\char@fullmacros{#2}{#3}
-}
+	% first expand the totalcharcounter, then pass it as argument
+	\edef\@Romanchar{\Roman{totalcharcounter}}
+	\expandafter\char@fullmacros\expandafter{\@Romanchar}{#2}{#3}
+	}
 
 \newsavebox{\tbox}
 
@@ -381,13 +357,14 @@
 
 \NewEnviron{scene}[1][]{
 	\stepcounter{scenecounter}
-	\@resetcharflags
 	
 	\def\@scenecharlist{\scenecastfont\@gobbletwo}% \@gobbletwo will remove the first ",\ "
+	
 	\let\@parsableitem\@empty
-
 	\sbox0{\BODY}% will not be typeset but "executed" and stored in block 0
 	\let\@parsableitem\item
+
+	\@resetcharflags
 	
 	\@scene{#1}
 	\begin{trivlist}
@@ -461,7 +438,10 @@
 \newcommand\@resetcharflags{
 	\stepcounter{flagstemp}%
 	%	
-		\@nameuse{enteredchar\Roman{flagstemp}false}
+		\ifcsname @char\Roman{flagstemp}enters\endcsname
+			\@nameuse{@char\Roman{flagstemp}enters}
+			\global\@namedef{@char\Roman{flagstemp}enters}{\undefined}
+		\fi
 	%
 	\ifnum\value{flagstemp}<\value{totalcharcounter}
 		\@resetcharflags
