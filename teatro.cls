@@ -20,6 +20,8 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%		Font styles
 
+\setlength{\parindent}{0pt}
+
 \newcommand{\namefont}{\scshape}
 \newcommand{\starfont}{\bf\scshape}
 \newcommand{\actionfont}{}
@@ -141,7 +143,9 @@
 		\else
 			\global\@namedef{@char#1enters}{\gappto\@scenecharlist{,\ #2}}
 		\fi
-		\@parsableitem[\@nameuse{@char#1font}#2]
+		\begingroup
+		\catcode`\^^M=\active%
+		\formatdialogue{\@nameuse{@char#1font}#2}%
 	}
 
 	% defines \timdo, expanding (just) the tokens that require totalcharcounter
@@ -152,7 +156,9 @@
 		\else
 			\global\@namedef{@char#1enters}{\gappto\@scenecharlist{,\ #2}}
 		\fi
-		\@parsableitem{\@nameuse{@char#1font}#2}\xspace
+		\begingroup
+		\catcode`\^^M=\active%
+		\formataction{\@nameuse{@char#1font}#2}%
 	}
 
 	\settowidth{\@thischarlength}{\@nameuse{@char#1font}#2}	% get max length to properly indent
@@ -160,6 +166,31 @@
 		\setlength{\maxcharlength}{\@thischarlength}
 	\fi
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%		Character macros
+
+\begingroup
+\catcode`\^^M=\active
+\long\gdef\formatdialogue#1#2^^M{
+	\begin{minipage}[l]{\maxcharlength}
+	%\raggedright					% keep them, i might use them for long charnames
+	%\leftmargini=0pt
+	#1
+	\end{minipage}%
+	#2
+	\endgroup
+	\par
+}
+\endgroup
+
+\begingroup
+\catcode`\^^M=\active%
+\long\gdef\formataction#1^^M{
+	#1
+	\endgroup
+	\par
+}
+\endgroup
 
 %%%%%%%%%%%%%%%%%%%%%%%		Group characters
 
@@ -360,18 +391,13 @@
 	
 	\def\@scenecharlist{\scenecastfont\@gobbletwo}% \@gobbletwo will remove the first ",\ "
 	
-	\let\@parsableitem\@empty
 	\sbox0{\BODY}% will not be typeset but "executed" and stored in block 0
-	\let\@parsableitem\item
-
+	
 	\@resetcharflags
 	
 	\@scene{#1}
-	\begin{trivlist}
-		\BODY
-}[
-	\end{trivlist}
-]
+	\BODY
+}[]
 
 
 \newcommand\@scene[1]{
