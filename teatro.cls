@@ -158,10 +158,10 @@
 		\fi
 		\begingroup
 		\catcode`\^^M=\active%
-		\formataction{\@nameuse{@char#1font}#2}%
+		\formataction{\@nameuse{@char#1font}#2\space}%
 	}
 
-	\settowidth{\@thischarlength}{\@nameuse{@char#1font}#2}	% get max length to properly indent
+	\settowidth{\@thischarlength}{\@nameuse{@char#1font}#2\space}	% get max length to properly indent
 	\ifnum\@thischarlength>\maxcharlength
 		\setlength{\maxcharlength}{\@thischarlength}
 	\fi
@@ -172,7 +172,7 @@
 \begingroup
 \catcode`\^^M=\active
 \long\gdef\formatdialogue#1#2^^M{
-	\begin{minipage}[l]{\maxcharlength}
+	\begin{minipage}[l]{1.3\maxcharlength}
 	%\raggedright					% keep them, i might use them for long charnames
 	%\leftmargini=0pt
 	#1
@@ -186,7 +186,7 @@
 \begingroup
 \catcode`\^^M=\active%
 \long\gdef\formataction#1^^M{
-	#1
+	\emph{#1}
 	\endgroup
 	\par
 }
@@ -386,19 +386,24 @@
 
 \newcommand{\thescene}{\arabic{scenecounter}}
 
-\NewEnviron{scene}[1][]{
-	\stepcounter{scenecounter}
-	
-	\def\@scenecharlist{\scenecastfont\@gobbletwo}% \@gobbletwo will remove the first ",\ "
-	
-	\sbox0{\BODY}% will not be typeset but "executed" and stored in block 0
-	
-	\@resetcharflags
-	
-	\@scene{#1}
-	\BODY
-}[]
+%\NewEnviron{scene}[1][]{
+%	\stepcounter{scenecounter}
+%	
+%	\def\@scenecharlist{\scenecastfont\@gobbletwo}% \@gobbletwo will remove the first ",\ "
+%	
+%	\sbox0{\BODY}% will not be typeset but "executed" and stored in block 0
+%	
+%	\@resetcharflags
+%	
+%	\@scene{#1}
+%	\BODY
+%}[]
 
+\newenvironment{scene}[1][]{
+	\stepcounter{scenecounter}
+	\def\@scenecharlist{\scenecastfont\@gobbletwo}
+	\@scene{#1}
+}{\@scenecharlist}
 
 \newcommand\@scene[1]{
 	\phantomsection								% for hyperref
