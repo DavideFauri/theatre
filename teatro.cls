@@ -126,7 +126,7 @@
 	\@namedef{#2}{
 		\begingroup
 		\catcode`\^^M=\active%
-		\formatdialogue{\namefont#1}
+		\formatdialogue{\namefont#1}%
 	}
 	\@namedef{#2\@ction}{
 		\begingroup
@@ -148,7 +148,9 @@
 			\global\@namedef{@char#1enters}{\gappto\@scenecharlist{,\ #2}}
 		\fi
 		\begingroup
-		\catcode`\^^M=\active%
+		\catcode`\^^M=\active\relax%
+		\catcode`\(=\active\relax%
+		\catcode`\)=\active\relax%
 		\formatdialogue{\@nameuse{@char#1font}#2}%
 	}
 
@@ -161,7 +163,7 @@
 			\global\@namedef{@char#1enters}{\gappto\@scenecharlist{,\ #2}}
 		\fi
 		\begingroup
-		\catcode`\^^M=\active%
+		\catcode`\^^M=\active\relax%
 		\formataction{\@nameuse{@char#1font}#2\space}%
 	}
 
@@ -446,6 +448,16 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%		Parentheticals
 
+\def\@setupparen{		\catcode`\(=\active\relax
+					\catcode`\)=\active\relax
+}
+\def\@cleanupparen{	\catcode`\(=12\relax
+					\catcode`\)=12\relax
+}
+
+\@setupparen
+\gdef(#1){{\char`\( \itshape#1\char`\) }}
+\@cleanupparen
 
 
 %%%%%%%%%%%%%%%%%%%%%%%		Stage directions
