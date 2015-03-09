@@ -20,7 +20,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%		Font styles
 
-\setlength{\parindent}{0pt}
+\parindent 0pt
 
 \newcommand{\namefont}{\scshape}
 \newcommand{\starfont}{\bf\scshape}
@@ -163,7 +163,7 @@
 
 	\settowidth{\@thischarlength}{\@nameuse{@char#1font}#2\space}	% get max length to properly indent
 	\ifnum\@thischarlength>\maxcharlength
-		\setlength{\maxcharlength}{\@thischarlength}
+		\global\setlength{\maxcharlength}{\@thischarlength}
 	\fi
 }
 
@@ -172,7 +172,7 @@
 \begingroup
 \catcode`\^^M=\active
 \long\gdef\formatdialogue#1#2^^M{
-	\begin{minipage}[l]{1.3\maxcharlength}
+	\begin{minipage}[l]{\maxcharlength}
 	%\raggedright					% keep them, i might use them for long charnames
 	%\leftmargini=0pt
 	#1
@@ -186,6 +186,8 @@
 \begingroup
 \catcode`\^^M=\active%
 \long\gdef\formataction#1^^M{
+	\leftskip 0.15\textwidth
+	\rightskip\leftskip
 	\emph{#1}
 	\endgroup
 	\par
@@ -403,6 +405,7 @@
 	\stepcounter{scenecounter}
 	\def\@scenecharlist{\scenecastfont\@gobbletwo}
 	\@scene{#1}
+	\parskip 0.5\baselineskip
 }{\@scenecharlist}
 
 \newcommand\@scene[1]{
