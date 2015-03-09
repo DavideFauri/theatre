@@ -124,10 +124,14 @@
 
 \def\char@simplemacros#1#2{
 	\@namedef{#2}{
-		\@parsableitem[\namefont#1]
+		\begingroup
+		\catcode`\^^M=\active%
+		\formatdialogue{\namefont#1}
 	}
 	\@namedef{#2\@ction}{
-		\@parsableitem\namefont #1\xspace
+		\begingroup
+		\catcode`\^^M=\active%
+		\formataction{\namefont#1\xspace}%
 	}
 }
 
@@ -172,11 +176,16 @@
 \begingroup
 \catcode`\^^M=\active
 \long\gdef\formatdialogue#1#2^^M{
+	
+	\parindent-\maxcharlength
+	\leftskip\maxcharlength
+	
 	\begin{minipage}[l]{\maxcharlength}
-	%\raggedright					% keep them, i might use them for long charnames
+	\raggedright					% for long charnames
 	%\leftmargini=0pt
 	#1
 	\end{minipage}%
+	%
 	#2
 	\endgroup
 	\par
@@ -186,6 +195,7 @@
 \begingroup
 \catcode`\^^M=\active%
 \long\gdef\formataction#1^^M{
+	\parindent 0pt
 	\leftskip 0.15\textwidth
 	\rightskip\leftskip
 	\emph{#1}
@@ -419,15 +429,12 @@
 
 	\@titlescene{#1}								% print whole scene title
 	
-	\@afterindentfalse								% prevent indentation after title
-	\@afterheading
+	%\@afterindentfalse								% prevent indentation after title
 }
 
 \newcommand\@titlescene[1]{
 	\vspace*{\beforesceneskip}
-	{\parindent \z@								% zero indentation
-	
-	\centering{\scenetitlefont\scenetitlename\ \thescene	% print "Scene 24"
+	{\centering{\scenetitlefont\scenetitlename\ \thescene	% print "Scene 24"
 	%		<---- do not remove the %!
 	\ifx\dummycommand#1\dummycommand			% print scene name
 	\else
