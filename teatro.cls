@@ -16,8 +16,11 @@
 
 \IfFileExists{silence.sty}{
 	\RequirePackage{silence}
-	\message{^^J^^JSUPPRESSING ALL "MULTIPLE LABELS" WARNINGS^^J^^J}
-	\WarningsOff[nameref]
+	\message{^^J
+			SUPPRESSING ALL "MULTIPLE LABELS" WARNINGS
+			^^J}
+	\WarningFilter{latex}{There were multiply-defined labels}
+	\WarningFilter{latex}{Label `act}
 }{}
 \ProcessOptions\relax		% ignore all options
 
@@ -58,6 +61,8 @@
 \newcounter{charstemp}
 
 %%%%%%%%%%%%%%%%%%%%%%%		Flags
+
+\newif\if@atleastonechar
 
 %%%%%%%%%%%%%%%%%%%%%%%		Title
 
@@ -113,7 +118,7 @@
 	\stepcounter{totalcharcounter}
 
 	% use script name if full name is empty
-	\ifx\dummycommand#1\dummycommand
+	\if\relax\detokenize{#1}\relax
 		\@namedef{persona@\Roman{castlistcounter}}{{\castfont#3}}
 	\else
 		\@namedef{persona@\Roman{castlistcounter}}{{\castfont#1}}
@@ -123,7 +128,7 @@
 	
 	% first expand the totalcharcounter, then pass it as argument
 	\edef\@Romanchar{\Roman{totalcharcounter}}
-	\expandafter\char@fullmacros\expandafter{\@Romanchar}{\uppercase{#3}}{#4}
+	\expandafter\char@fullmacros\expandafter{\@Romanchar}{{\scshape#3}}{#4}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%		Character macros
@@ -238,7 +243,7 @@
 	\stepcounter{totalcharcounter}
 
 	% use script name if full name is empty
-	\ifx\dummycommand#1\dummycommand
+	\if\relax\detokenize{#1}\relax
 		\global\@namedef{gpersona@\Roman{castlistcounter}@\roman{group@\Roman{castlistcounter}}}{{\castfont#2}}
 	\else
 		\global\@namedef{gpersona@\Roman{castlistcounter}@\roman{group@\Roman{castlistcounter}}}{{\castfont#1}}
@@ -246,7 +251,7 @@
 
 	% first expand the totalcharcounter, then pass it as argument
 	\edef\@Romanchar{\Roman{totalcharcounter}}
-	\expandafter\char@fullmacros\expandafter{\@Romanchar}{\uppercase{#2}}{#3}
+	\expandafter\char@fullmacros\expandafter{\@Romanchar}{{\scshape#2}}{#3}
 	}
 
 \newsavebox{\tbox}
@@ -372,7 +377,7 @@
 	\refstepcounter{actcounter}							% increment number of acts
 	\phantomsection									% for hyperref
 	\actmark{\acttitlename\ \theact}							% mark for headers
-	\ifx\dummycommand#1\dummycommand
+	\if\relax\detokenize{#1}\relax
 		\addcontentsline{toc}{chapter}{\acttitlename\ \theact}
 	\else
 		\addcontentsline{toc}{chapter}{\acttitlename\ \theact\actseparator#1}
@@ -386,11 +391,10 @@
 
 \newcommand\@titleact[1]{
 	\vspace*{\beforeactskip}
-	{\parindent \z@									% zero indentation
-	
+	{\parindent 0pt	\parskip 0.25\baselineskip				% zero indentation, some line skip
 	\centering\acttitlefont\acttitlename\ \theact				% print "Act III"
 	%		<---- do not remove the %!
-	\ifx\dummycommand#1\dummycommand				% print act name
+	\if\relax\detokenize{#1}\relax							% print act name
 	\else
 		\actseparator\par\nobreak#1
 	\fi
@@ -420,7 +424,7 @@
 \newcommand\@scene[1]{
 	\phantomsection								% for hyperref
 	\scenemark{\scenetitlename\ \thescene}				% mark for headers
-	\ifx\dummycommand#1\dummycommand
+	\if\relax\detokenize{#1}\relax
 		\addcontentsline{toc}{section}{\scenetitlename\ \thescene}
 	\else
 		\addcontentsline{toc}{section}{\scenetitlename\ \thescene\sceneseparator#1}
@@ -435,12 +439,12 @@
 	\vspace*{\beforesceneskip}
 	{\centering{\scenetitlefont\scenetitlename\ \thescene	% print "Scene 24"
 	%		<---- do not remove the %!
-	\ifx\dummycommand#1\dummycommand			% print scene name
+	\if\relax\detokenize{#1}\relax			% print scene name
 	\else
 		\sceneseparator#1
 	\fi}%
-	%\edef\fulllistchars@scene{\listchars@scene}
-	\par\nobreak{\scenecastfont\expandafter\@gobbletwo\listchars@scene\@empty\@empty}
+	
+	\par\nobreak{\recurse@scenecharlist}%
 	\par\nobreak\vskip\aftersceneskip}
 }
 
@@ -483,17 +487,19 @@
 \newlength{\maxcharlength}\setlength{\maxcharlength}{0pt}
 \newlength{\@thischarlength}
 
-\csname dummycommand \endcsname
 
-\newcommand\listchars@scene{%
+
+\newcommand\recurse@scenecharlist{%
 	\stepcounter{charstemp}%
 	%
 	\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char\Roman{charstemp}}
 		{}
-		{,\ \@nameuse{@char\Roman{charstemp}name}}% TODO: use \ref with a custom name, link to first appearence
+		{\if@atleastonechar{,\ }\fi
+		\@nameuse{@char\Roman{charstemp}name}%
+		\@atleastonechartrue}%
 	%
 	\ifnum\value{charstemp}<\value{totalcharcounter}%
-		\listchars@scene%
+		\recurse@scenecharlist
 	\fi
 	\setcounter{charstemp}{0}%
 }

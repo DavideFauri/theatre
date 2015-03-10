@@ -16,8 +16,8 @@ It will support:
   * Customizable formatting for all elements (titles, dialogue, stage and technical directions)
   * A TikZ-drawn stage template before each act to annotate the stage layout (doors, furniture...)
   * Similar smaller drawings at the right side of the page to annotate actor's movements during scenes
-* Landscape mode
-* Rehearsal mode (actor's line intentionally left blank)
+  * Landscape mode
+  * Rehearsal mode (actor's line intentionally left blank)
 
 The class is derived both from `stage.cls` (from which I borrowed the title page) and from `dramatist.sty` (from which I borrowed everything else)
 
@@ -26,7 +26,7 @@ The class is derived both from `stage.cls` (from which I borrowed the title page
 A full working example is provided by the `example.tex` file. I have no idea if I'm infringing any rights.
 
 ## TODO list
-1) Make it so that `\characterdo` generates an `\item` when it's called at the begin of the stage direction, and just prints the character name if it's preceded by another `\characterdo` or a `\stagedir`
+1) create a `\stagedir` macro capable of accepting graciously `\characterdo`
 
 2) Write and format technical directions
   * should be aligned to the right, in caps
