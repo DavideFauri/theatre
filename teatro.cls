@@ -10,9 +10,15 @@
 %\RequirePackage{extramarks}
 \RequirePackage{xspace}	% add space after macro when appropriate
 %\RequirePackage{tikz}
+\RequirePackage{nameref}
 
 %%%%%%%%%%%%%%%%%%%%%%%		Options
 
+\IfFileExists{silence.sty}{
+	\RequirePackage{silence}
+	\message{^^J^^JSUPPRESSING ALL "MULTIPLE LABELS" WARNINGS^^J^^J}
+	\WarningsOff[nameref]
+}{}
 \ProcessOptions\relax		% ignore all options
 
 % if mirror flag, turn all drawings upside down
@@ -44,10 +50,11 @@
 \newcounter{totalcharcounter}
 \newcounter{actcounter}
 \newcounter{scenecounter}[actcounter]
+\newcounter{entrancecounter}[scenecounter]
 
 \newcounter{grouptemp}
 \newcounter{casttemp}
-\newcounter{flagstemp}
+\newcounter{charstemp}
 
 %%%%%%%%%%%%%%%%%%%%%%%		Flags
 
@@ -137,16 +144,19 @@
 
 \def\char@fullmacros#1#2#3{
 
+	% specifies the name for this character
+	\global\expandafter\def\csname @char#1name\endcsname{{\@nameuse{@char#1font}#2}}
+
 	% specifies the font for this character
 	\global\expandafter\let\csname @char#1font\endcsname\@thischarfont
 	
 	% defines \tim, expanding (just) the tokens that require totalcharcounter
 	\global\@namedef{#3}{%
-		% if it's the first time that the macro is called in the scene, append char name to list
-		\ifcsname @char#1enters\endcsname
-		\else
-			\global\@namedef{@char#1enters}{\gappto\@scenecharlist{,\ #2}}
-		\fi
+		% if it's the first time that the macro is called in the scene, create label
+		\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char#1}
+			{\refstepcounter{entrancecounter}
+			\label{act\Roman{actcounter}scene\Roman{scenecounter}char#1}}
+			{}
 		\begingroup
 		\catcode`\^^M=\active\relax%
 		\catcode`\(=\active\relax%
@@ -157,11 +167,11 @@
 	% defines \timdo, expanding (just) the tokens that require totalcharcounter
 	\global\@namedef{#3\@ction}{
 		
-		% if it's the first time that the macro is called in the scene, append char name to list
-		\ifcsname @char#1enters\endcsname
-		\else
-			\global\@namedef{@char#1enters}{\gappto\@scenecharlist{,\ #2}}
-		\fi
+		% if it's the first time that the macro is called in the scene, create label
+		\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char#1}
+			{\refstepcounter{entrancecounter}
+			\label{act\Roman{actcounter}scene\Roman{scenecounter}char#1}}
+			{}
 		\begingroup
 		\catcode`\^^M=\active\relax%
 		\formataction{\@nameuse{@char#1font}#2\space}%
@@ -400,25 +410,11 @@
 
 \newcommand{\thescene}{\arabic{scenecounter}}
 
-%\NewEnviron{scene}[1][]{
-%	\stepcounter{scenecounter}
-%	
-%	\def\@scenecharlist{\scenecastfont\@gobbletwo}% \@gobbletwo will remove the first ",\ "
-%	
-%	\sbox0{\BODY}% will not be typeset but "executed" and stored in block 0
-%	
-%	\@resetcharflags
-%	
-%	\@scene{#1}
-%	\BODY
-%}[]
-
-\newenvironment{scene}[1][]{
+\newcommand\scene[1][]{
 	\stepcounter{scenecounter}
-	\def\@scenecharlist{\scenecastfont\@gobbletwo}
 	\@scene{#1}
 	\parskip 0.5\baselineskip
-}{\@scenecharlist}
+}
 
 \newcommand\@scene[1]{
 	\phantomsection								% for hyperref
@@ -441,8 +437,9 @@
 	\ifx\dummycommand#1\dummycommand			% print scene name
 	\else
 		\sceneseparator#1
-	\fi}
-	\par\nobreak{\@scenecharlist\@empty\@empty}
+	\fi}%
+	%\edef\fulllistchars@scene{\listchars@scene}
+	\par\nobreak{\scenecastfont\expandafter\@gobbletwo\listchars@scene\@empty\@empty}
 	\par\nobreak\vskip\aftersceneskip}
 }
 
@@ -458,7 +455,6 @@
 \@setupparen
 \gdef(#1){{\char`\( \itshape#1\char`\) }}
 \@cleanupparen
-
 
 %%%%%%%%%%%%%%%%%%%%%%%		Stage directions
 
@@ -488,16 +484,15 @@
 
 \csname dummycommand \endcsname
 
-\newcommand\@resetcharflags{
-	\stepcounter{flagstemp}%
-	%	
-		\ifcsname @char\Roman{flagstemp}enters\endcsname
-			\@nameuse{@char\Roman{flagstemp}enters}
-			\global\@namedef{@char\Roman{flagstemp}enters}{\undefined}
-		\fi
+\newcommand\listchars@scene{%
+	\stepcounter{charstemp}%
 	%
-	\ifnum\value{flagstemp}<\value{totalcharcounter}
-		\@resetcharflags
+	\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char\Roman{charstemp}}
+		{}
+		{,\ \@nameuse{@char\Roman{charstemp}name}}% TODO: use \ref with a custom name, link to first appearence
+	%
+	\ifnum\value{charstemp}<\value{totalcharcounter}%
+		\listchars@scene%
 	\fi
-	\setcounter{flagstemp}{0}
+	\setcounter{charstemp}{0}%
 }
