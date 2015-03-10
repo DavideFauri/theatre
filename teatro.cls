@@ -10,15 +10,23 @@
 %\RequirePackage{extramarks}
 \RequirePackage{xspace}	% add space after macro when appropriate
 %\RequirePackage{tikz}
+\RequirePackage{nameref}
 
 %%%%%%%%%%%%%%%%%%%%%%%		Options
 
+\IfFileExists{silence.sty}{
+	\RequirePackage{silence}
+	\message{^^J^^JSUPPRESSING ALL "MULTIPLE LABELS" WARNINGS^^J^^J}
+	\WarningsOff[nameref]
+}{}
 \ProcessOptions\relax		% ignore all options
 
 % if mirror flag, turn all drawings upside down
 % if drawing flag, turn off/on drawings and tikz dependency (remember the group chars brace!)
 
 %%%%%%%%%%%%%%%%%%%%%%%		Font styles
+
+\parindent 0pt
 
 \newcommand{\namefont}{\scshape}
 \newcommand{\starfont}{\bf\scshape}
@@ -42,10 +50,11 @@
 \newcounter{totalcharcounter}
 \newcounter{actcounter}
 \newcounter{scenecounter}[actcounter]
+\newcounter{entrancecounter}[scenecounter]
 
 \newcounter{grouptemp}
 \newcounter{casttemp}
-\newcounter{flagstemp}
+\newcounter{charstemp}
 
 %%%%%%%%%%%%%%%%%%%%%%%		Flags
 
@@ -122,44 +131,90 @@
 
 \def\char@simplemacros#1#2{
 	\@namedef{#2}{
-		\@parsableitem[\namefont#1]
+		\begingroup
+		\catcode`\^^M=\active%
+		\formatdialogue{\namefont#1}%
 	}
 	\@namedef{#2\@ction}{
-		\@parsableitem\namefont #1\xspace
+		\begingroup
+		\catcode`\^^M=\active%
+		\formataction{\namefont#1\xspace}%
 	}
 }
 
 \def\char@fullmacros#1#2#3{
+
+	% specifies the name for this character
+	\global\expandafter\def\csname @char#1name\endcsname{{\@nameuse{@char#1font}#2}}
 
 	% specifies the font for this character
 	\global\expandafter\let\csname @char#1font\endcsname\@thischarfont
 	
 	% defines \tim, expanding (just) the tokens that require totalcharcounter
 	\global\@namedef{#3}{%
-		% if it's the first time that the macro is called in the scene, append char name to list
-		\ifcsname @char#1enters\endcsname
-		\else
-			\global\@namedef{@char#1enters}{\gappto\@scenecharlist{,\ #2}}
-		\fi
-		\@parsableitem[\@nameuse{@char#1font}#2]
+		% if it's the first time that the macro is called in the scene, create label
+		\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char#1}
+			{\refstepcounter{entrancecounter}
+			\label{act\Roman{actcounter}scene\Roman{scenecounter}char#1}}
+			{}
+		\begingroup
+		\catcode`\^^M=\active\relax%
+		\catcode`\(=\active\relax%
+		\catcode`\)=\active\relax%
+		\formatdialogue{\@nameuse{@char#1font}#2}%
 	}
 
 	% defines \timdo, expanding (just) the tokens that require totalcharcounter
 	\global\@namedef{#3\@ction}{
 		
-		% if it's the first time that the macro is called in the scene, append char name to list
-		\ifcsname @char#1enters\endcsname
-		\else
-			\global\@namedef{@char#1enters}{\gappto\@scenecharlist{,\ #2}}
-		\fi
-		\@parsableitem{\@nameuse{@char#1font}#2}\xspace
+		% if it's the first time that the macro is called in the scene, create label
+		\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char#1}
+			{\refstepcounter{entrancecounter}
+			\label{act\Roman{actcounter}scene\Roman{scenecounter}char#1}}
+			{}
+		\begingroup
+		\catcode`\^^M=\active\relax%
+		\formataction{\@nameuse{@char#1font}#2\space}%
 	}
 
-	\settowidth{\@thischarlength}{\@nameuse{@char#1font}#2}	% get max length to properly indent
+	\settowidth{\@thischarlength}{\@nameuse{@char#1font}#2\space}	% get max length to properly indent
 	\ifnum\@thischarlength>\maxcharlength
-		\setlength{\maxcharlength}{\@thischarlength}
+		\global\setlength{\maxcharlength}{\@thischarlength}
 	\fi
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%		Character macros
+
+\begingroup
+\catcode`\^^M=\active
+\long\gdef\formatdialogue#1#2^^M{
+	
+	\parindent-\maxcharlength
+	\leftskip\maxcharlength
+	
+	\begin{minipage}[l]{\maxcharlength}
+	\raggedright					% for long charnames
+	%\leftmargini=0pt
+	#1
+	\end{minipage}%
+	%
+	#2
+	\endgroup
+	\par
+}
+\endgroup
+
+\begingroup
+\catcode`\^^M=\active%
+\long\gdef\formataction#1^^M{
+	\parindent 0pt
+	\leftskip 0.15\textwidth
+	\rightskip\leftskip
+	\emph{#1}
+	\endgroup
+	\par
+}
+\endgroup
 
 %%%%%%%%%%%%%%%%%%%%%%%		Group characters
 
@@ -355,24 +410,11 @@
 
 \newcommand{\thescene}{\arabic{scenecounter}}
 
-\NewEnviron{scene}[1][]{
+\newcommand\scene[1][]{
 	\stepcounter{scenecounter}
-	
-	\def\@scenecharlist{\scenecastfont\@gobbletwo}% \@gobbletwo will remove the first ",\ "
-	
-	\let\@parsableitem\@empty
-	\sbox0{\BODY}% will not be typeset but "executed" and stored in block 0
-	\let\@parsableitem\item
-
-	\@resetcharflags
-	
 	\@scene{#1}
-	\begin{trivlist}
-		\BODY
-}[
-	\end{trivlist}
-]
-
+	\parskip 0.5\baselineskip
+}
 
 \newcommand\@scene[1]{
 	\phantomsection								% for hyperref
@@ -385,27 +427,34 @@
 
 	\@titlescene{#1}								% print whole scene title
 	
-	\@afterindentfalse								% prevent indentation after title
-	\@afterheading
+	%\@afterindentfalse								% prevent indentation after title
 }
 
 \newcommand\@titlescene[1]{
 	\vspace*{\beforesceneskip}
-	{\parindent \z@								% zero indentation
-	
-	\centering{\scenetitlefont\scenetitlename\ \thescene	% print "Scene 24"
+	{\centering{\scenetitlefont\scenetitlename\ \thescene	% print "Scene 24"
 	%		<---- do not remove the %!
 	\ifx\dummycommand#1\dummycommand			% print scene name
 	\else
 		\sceneseparator#1
-	\fi}
-	\par\nobreak{\@scenecharlist\@empty\@empty}
+	\fi}%
+	%\edef\fulllistchars@scene{\listchars@scene}
+	\par\nobreak{\scenecastfont\expandafter\@gobbletwo\listchars@scene\@empty\@empty}
 	\par\nobreak\vskip\aftersceneskip}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%		Parentheticals
 
+\def\@setupparen{		\catcode`\(=\active\relax
+					\catcode`\)=\active\relax
+}
+\def\@cleanupparen{	\catcode`\(=12\relax
+					\catcode`\)=12\relax
+}
 
+\@setupparen
+\gdef(#1){{\char`\( \itshape#1\char`\) }}
+\@cleanupparen
 
 %%%%%%%%%%%%%%%%%%%%%%%		Stage directions
 
@@ -435,16 +484,15 @@
 
 \csname dummycommand \endcsname
 
-\newcommand\@resetcharflags{
-	\stepcounter{flagstemp}%
-	%	
-		\ifcsname @char\Roman{flagstemp}enters\endcsname
-			\@nameuse{@char\Roman{flagstemp}enters}
-			\global\@namedef{@char\Roman{flagstemp}enters}{\undefined}
-		\fi
+\newcommand\listchars@scene{%
+	\stepcounter{charstemp}%
 	%
-	\ifnum\value{flagstemp}<\value{totalcharcounter}
-		\@resetcharflags
+	\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char\Roman{charstemp}}
+		{}
+		{,\ \@nameuse{@char\Roman{charstemp}name}}% TODO: use \ref with a custom name, link to first appearence
+	%
+	\ifnum\value{charstemp}<\value{totalcharcounter}%
+		\listchars@scene%
 	\fi
-	\setcounter{flagstemp}{0}
+	\setcounter{charstemp}{0}%
 }
