@@ -1,4 +1,4 @@
-\ProvidesClass{teatro}[2015/01/27 v0.1b Script Format for stage plays]
+\ProvidesClass{theatre}[2015/10/03 v0.55 Script Format for stage plays]
 \NeedsTeXFormat{LaTeX2e}
 \LoadClass[12pt, oneside, a4paper, openright]{book}
 
