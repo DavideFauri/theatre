@@ -4,6 +4,8 @@
 
 %\@ifundefined{if@openright}{\newif\if@openright}{} 
 
+\RequirePackage{ifthen}				% for iteration cycles
+\RequirePackage[T1]{fontenc}			% for bold small caps
 \RequirePackage{etoolbox, environ}	% for dynamic list of chars in each scene
 \RequirePackage{xparse}
 %\RequirePackage{fancyhdr}
@@ -32,7 +34,7 @@
 \parindent 0pt
 
 \newcommand{\namefont}{\scshape}
-\newcommand{\starfont}{\bf\scshape}
+\newcommand{\starfont}{\large\bf\scshape}
 
 \newcommand{\actionfont}{}
 \newcommand{\stagedirfont}{}
@@ -70,7 +72,8 @@
 \newcommand{\draft}[1]{				\gdef\@draftno{#1}}		% draft number
 \newcommand{\copyrightnotice}[1]{		\gdef\@crightnotice{#1}}	% copyright
 \newcommand{\address}[1]{			\gdef\@address{#1}}	% physical address
-\newcommand{\contactinfo}[1]{		\gdef\@cinfo{#1}}		% contact information
+\newcommand{\telephone}[1]{			\gdef\@telephone{#1}}	% telephone number
+\newcommand{\email}[1]{				\gdef\@email{#1}}		% email address
 
 % create title page
 \renewcommand{\maketitle}{
@@ -83,11 +86,10 @@
 		\ifdefined\@draftno{\small DRAFT \@draftno}\fi
 		\vfill\vfill
 		\begin{flushright}
-			\ifdefined\@crightnotice{\copyright\ \@crightnotice}\fi
-			\par
-			\ifdefined\@address{\@address}\fi
-			\par
-			\ifdefined\@cinfo{tel. \@cinfo}\fi
+			\ifdefined\@crightnotice{\copyright\ \@crightnotice\par}\fi
+			\ifdefined\@address{\@address\par}\fi
+			\ifdefined\@telephone{tel. \@telephone\par}\fi
+			\ifdefined\@email{\@email}\fi
 		\end{flushright}
 	\end{titlepage}
 }
