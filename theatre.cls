@@ -113,12 +113,8 @@
 
 \NewDocumentCommand{\character}{s}{%
 	\IfBooleanTF{#1}						% if starred, use special fonts
-		{\global\let\@thischarfont\starfont
-		 \global\let\@thiscastfont\caststarfont
-		\@thischarstartrue}
-		{\global\let\@thischarfont\namefont
-		 \global\let\@thiscastfont\castfont
-		\@thischarstarfalse}
+		{\@thischarstartrue}
+		{\@thischarstarfalse}
 	\@ifnextchar[
 		{\char@cast}			% has description, add to cast list
 		{\char@simplemacros}	% no description, just create macros
@@ -134,15 +130,23 @@
 	\stepcounter{castlistcounter}
 	\stepcounter{totalcharcounter}
 	
-	\if@thischarstar{%			add character to title page
+	\if@thischarstar{			% add character to title page
 		\immediate\write\titlecast{#3\par}
 	}\fi
 
 	% use script name if full name is empty
 	\if\relax\detokenize{#1}\relax
-		\@namedef{persona@\Roman{castlistcounter}}{\castfont#3}
+		\if@thischarstar{
+			\csgdef{persona@\Roman{castlistcounter}}{\caststarfont#3}
+		}\else{
+			\csgdef{persona@\Roman{castlistcounter}}{\castfont#3}
+		}\fi
 	\else
-		\@namedef{persona@\Roman{castlistcounter}}{\castfont#1}
+		\if@thischarstar{
+			\csgdef{persona@\Roman{castlistcounter}}{\caststarfont#1}
+		}\else{
+			\csgdef{persona@\Roman{castlistcounter}}{\castfont#1}
+		}\fi
 	\fi
 	
 	\@namedef{description@\Roman{castlistcounter}}{#2}
@@ -174,11 +178,12 @@
 	% specifies the name for this character
 	\csgdef{@char#1name}{\@nameuse{@char#1font}#2}
 
-	% specifies the script font for this character
-	\global\cslet{@char#1font}{\@thischarfont}
-	
-	%specifies the castlist font for this character
-	\global\cslet{@cast#1font}{\@thiscastfont}
+	% specifies the script font and castlist font for this character
+	\if@thischarstar{
+		\csgdef{@char#1font}{\starfont}
+	}\else{
+		\csgdef{@char#1font}{\namefont}
+	}\fi
 	
 	% defines \tim, expanding (just) the tokens that require totalcharcounter
 	\csgdef{#3}{%
@@ -268,15 +273,23 @@
 	\stepcounter{group@\Roman{castlistcounter}}
 	\stepcounter{totalcharcounter}
 
-	\if@thischarstar{%			add character to title page
-		\immediate\write\titlecast{#2\par}%
-	}\fi
+	\if@thischarstar{			% add character to title page
+		\immediate\write\titlecast{#2\par}}
+	\fi
 
 	% use script name if full name is empty
 	\if\relax\detokenize{#1}\relax
-		\global\@namedef{gpersona@\Roman{castlistcounter}@\roman{group@\Roman{castlistcounter}}}{{\castfont#2}}
+		\if@thischarstar{
+			\csgdef{gpersona@\Roman{castlistcounter}@\roman{group@\Roman{castlistcounter}}}{{\caststarfont#2}}
+		}\else{
+			\csgdef{gpersona@\Roman{castlistcounter}@\roman{group@\Roman{castlistcounter}}}{{\castfont#2}}
+		}\fi
 	\else
-		\global\@namedef{gpersona@\Roman{castlistcounter}@\roman{group@\Roman{castlistcounter}}}{{\castfont#1}}
+		\if@thischarstar{
+			\csgdef{gpersona@\Roman{castlistcounter}@\roman{group@\Roman{castlistcounter}}}{{\caststarfont#1}}
+		}\else{
+			\csgdef{gpersona@\Roman{castlistcounter}@\roman{group@\Roman{castlistcounter}}}{{\castfont#1}}
+		}\fi
 	\fi
 
 	% first expand the totalcharcounter, then pass it as argument
@@ -288,10 +301,10 @@
 
 \newenvironment{chargroup}[1][]{
 	\stepcounter{castlistcounter}			% each group counts as one character
-	\global\@namedef{description@\Roman{castlistcounter}}{#1}	% description
+	\csgdef{description@\Roman{castlistcounter}}{#1}	% description
 
 	\newcounter{group@\Roman{castlistcounter}}	% count characters within the group
-	\global\@namedef{persona@\Roman{castlistcounter}}{
+	\csgdef{persona@\Roman{castlistcounter}}{
 		\begin{lrbox}{\tbox}
 			\begin{minipage}[c]{\castnamewidth}\raggedright
 			\leftmargini=0pt
