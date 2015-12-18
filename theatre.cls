@@ -4,7 +4,6 @@
 
 %\@ifundefined{if@openright}{\newif\if@openright}{} 
 
-\RequirePackage{ifthen}				% for iteration cycles
 \RequirePackage[T1]{fontenc}			% for bold small caps
 \RequirePackage{etoolbox, environ}	% for dynamic list of chars in each scene
 \RequirePackage{xparse}
@@ -150,16 +149,19 @@
 	}
 }
 
-\def\char@fullmacros#1#2#3{
+\def\char@fullmacros#1#2#3{					% args={\Roman{totalcharcounter}}{Timothy}{tim}
 
 	% specifies the name for this character
-	\global\expandafter\def\csname @char#1name\endcsname{{\@nameuse{@char#1font}#2}}
+	\csgdef{@char#1name}{\@nameuse{@char#1font}#2}
 
-	% specifies the font for this character
-	\global\expandafter\let\csname @char#1font\endcsname\@thischarfont
+	% specifies the script font for this character
+	\global\cslet{@char#1font}{\@thischarfont}
+	
+	%specifies the castlist font for this character
+	\global\cslet{@cast#1font}{\@thiscastfont}
 	
 	% defines \tim, expanding (just) the tokens that require totalcharcounter
-	\global\@namedef{#3}{%
+	\csgdef{#3}{%
 		% if it's the first time that the macro is called in the scene, create label
 		\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char#1}
 			{\refstepcounter{entrancecounter}
@@ -173,7 +175,7 @@
 	}
 
 	% defines \timdo, expanding (just) the tokens that require totalcharcounter
-	\global\@namedef{#3\@ction}{
+	\csgdef{#3\@ction}{
 		
 		% if it's the first time that the macro is called in the scene, create label
 		\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char#1}
@@ -191,7 +193,7 @@
 	\fi
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%		Character macros
+%%%%%%%%%%%%%%%%%%%%%%%		Character macros (formataction, formatdialogue)
 
 \begingroup
 \catcode`\^^M=\active
@@ -450,6 +452,21 @@
 	\par\nobreak\vskip\aftersceneskip}
 }
 
+\newcommand\recurse@scenecharlist{%
+	\stepcounter{charstemp}%
+	%
+	\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char\Roman{charstemp}}
+		{}
+		{\if@atleastonechar{,\ }\fi
+		\@nameuse{@char\Roman{charstemp}name}%
+		\@atleastonechartrue}%
+	%
+	\ifnum\value{charstemp}<\value{totalcharcounter}%
+		\recurse@scenecharlist
+	\fi
+	\setcounter{charstemp}{0}%
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%		Parentheticals
 
 \def\@setupparen{		\catcode`\(=\active\relax
@@ -491,18 +508,5 @@
 
 
 
-\newcommand\recurse@scenecharlist{%
-	\stepcounter{charstemp}%
-	%
-	\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char\Roman{charstemp}}
-		{}
-		{\if@atleastonechar{,\ }\fi
-		\@nameuse{@char\Roman{charstemp}name}%
-		\@atleastonechartrue}%
-	%
-	\ifnum\value{charstemp}<\value{totalcharcounter}%
-		\recurse@scenecharlist
-	\fi
-	\setcounter{charstemp}{0}%
-}
+
 
