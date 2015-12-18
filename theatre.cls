@@ -33,21 +33,24 @@
 \parindent 0pt
 
 \newcommand{\namefont}{\scshape}
-\newcommand{\starfont}{\large\bf\scshape}
+\newcommand{\starfont}{\bf\namefont\large}
 
 \newcommand{\actionfont}{}
 \newcommand{\stagedirfont}{}
 
+\newcommand{\titlestarfont}{\starfont\Huge}
+
 \newcommand{\casttitlename}{Cast of Characters}
 \newcommand{\casttitlefont}{\scshape\Large}
-\newcommand{\castfont}{\scshape}
+\newcommand{\castfont}{\namefont}
+\newcommand{\caststarfont}{\starfont\large}
 
 \newcommand{\acttitlename}{Act}
 \newcommand{\acttitlefont}{\scshape\Large}
 
 \newcommand{\scenetitlename}{Scene}
 \newcommand{\scenetitlefont}{\scshape\large}
-\newcommand{\scenecastfont}{\small}
+\newcommand{\scenecastfont}{\namefont\small}
 
 %%%%%%%%%%%%%%%%%%%%%%%		Counters
 
@@ -64,6 +67,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%		Flags
 
 \newif\if@atleastonechar
+\newif\if@thischarstar		% checks if the current character is starred
+
+%%%%%%%%%%%%%%%%%%%%%%%		Temp files
+
+\newwrite\titlecast
+\immediate\openout\titlecast=\jobname-titlecast.tmp
 
 %%%%%%%%%%%%%%%%%%%%%%%		Title
 
@@ -83,7 +92,10 @@
 		\center{\Large \@author}
 		\par\vspace{1cm}
 		\ifdefined\@draftno{\small DRAFT \@draftno}\fi
-		\vfill\vfill
+		\vfill
+		\immediate\closeout\titlecast
+		{\titlestarfont\input{\jobname-titlecast.tmp}}
+		\vfill
 		\begin{flushright}
 			\ifdefined\@crightnotice{\copyright\ \@crightnotice\par}\fi
 			\ifdefined\@address{\@address\par}\fi
@@ -100,12 +112,16 @@
 % \character{Timothy}{tim}
 
 \NewDocumentCommand{\character}{s}{%
-	\IfBooleanTF{#1}						% if starred, use special font
-		{\global\let\@thischarfont\starfont}
-		{\global\let\@thischarfont\namefont}
+	\IfBooleanTF{#1}						% if starred, use special fonts
+		{\global\let\@thischarfont\starfont
+		 \global\let\@thiscastfont\caststarfont
+		\@thischarstartrue}
+		{\global\let\@thischarfont\namefont
+		 \global\let\@thiscastfont\castfont
+		\@thischarstarfalse}
 	\@ifnextchar[
-		{\char@cast}			% add to cast list
-		{\char@simplemacros}	% just create macros
+		{\char@cast}			% has description, add to cast list
+		{\char@simplemacros}	% no description, just create macros
 }
 
 \def\char@cast[#1]{
@@ -117,26 +133,30 @@
 \def\char@castfull#1[#2]#3#4{
 	\stepcounter{castlistcounter}
 	\stepcounter{totalcharcounter}
+	
+	\if@thischarstar{%			add character to title page
+		\immediate\write\titlecast{#3\par}
+	}\fi
 
 	% use script name if full name is empty
 	\if\relax\detokenize{#1}\relax
-		\@namedef{persona@\Roman{castlistcounter}}{{\castfont#3}}
+		\@namedef{persona@\Roman{castlistcounter}}{\castfont#3}
 	\else
-		\@namedef{persona@\Roman{castlistcounter}}{{\castfont#1}}
+		\@namedef{persona@\Roman{castlistcounter}}{\castfont#1}
 	\fi
 	
 	\@namedef{description@\Roman{castlistcounter}}{#2}
 	
 	% first expand the totalcharcounter, then pass it as argument
 	\edef\@Romanchar{\Roman{totalcharcounter}}
-	\expandafter\char@fullmacros\expandafter{\@Romanchar}{{\scshape#3}}{#4}
+	\expandafter\char@fullmacros\expandafter{\@Romanchar}{#3}{#4}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%		Character macros
 
-\newcommand{\@ction}{do}					% suffix for stage directions
+\newcommand{\@ction}{do}					% suffix for stage directions command, ex. \timdo
 
-\def\char@simplemacros#1#2{
+\def\char@simplemacros#1#2{				% args={Timothy}{tim}
 	\@namedef{#2}{
 		\begingroup
 		\catcode`\^^M=\active%
@@ -235,8 +255,10 @@
 
 \NewDocumentCommand{\gcharacter}{s}{%
 	\IfBooleanTF{#1}						% if starred, use special font
-		{\global\let\@thischarfont\starfont}
-		{\global\let\@thischarfont\namefont}
+		{\global\let\@thischarfont\starfont
+		\@thischarstartrue}
+		{\global\let\@thischarfont\namefont
+		\@thischarstarfalse}
 	\@ifnextchar[
 		{\gchar@cast}
 		{\gchar@cast[]}			% add empty [full name] if absent
@@ -245,6 +267,10 @@
 \newcommand\gchar@cast[3][]{
 	\stepcounter{group@\Roman{castlistcounter}}
 	\stepcounter{totalcharcounter}
+
+	\if@thischarstar{%			add character to title page
+		\immediate\write\titlecast{#2\par}%
+	}\fi
 
 	% use script name if full name is empty
 	\if\relax\detokenize{#1}\relax
