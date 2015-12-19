@@ -35,7 +35,7 @@
 \newcommand{\namefont}{\scshape}
 \newcommand{\starfont}{\bf\namefont\large}
 
-\newcommand{\actionfont}{}
+\newcommand{\actionfont}{\it}
 \newcommand{\stagedirfont}{}
 
 \newcommand{\titlestarfont}{\starfont\Huge}
@@ -220,11 +220,12 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%		Character macros (formataction, formatdialogue)
 
+% Dialogue formatting
 \begingroup
 \catcode`\^^M=\active
 \long\gdef\formatdialogue#1#2^^M{
 	
-	\parindent-\maxcharlength
+	\parindent-\maxcharlength		% for indenting correctly the char name
 	\leftskip\maxcharlength
 	
 	\begin{minipage}[l]{\maxcharlength}
@@ -239,13 +240,14 @@
 }
 \endgroup
 
+% Action formatting
 \begingroup
 \catcode`\^^M=\active%
 \long\gdef\formataction#1^^M{
 	\parindent 0pt
 	\leftskip 0.15\textwidth
 	\rightskip\leftskip
-	\emph{#1}
+	{\actionfont#1}
 	\endgroup
 	\par
 }
@@ -339,7 +341,7 @@
 \newlength{\beforecasttitleskip}	\setlength{\beforecasttitleskip}{0pt}
 \newlength{\aftercasttitleskip}		\setlength{\aftercasttitleskip}{1cm}
 
-\newlength{\castpageleftmargin}	\setlength{\castpageleftmargin}{2cm}
+\newlength{\castpageleftmargin}	\setlength{\castpageleftmargin}{1.5cm}
 \newlength{\castpagerightmargin}	\setlength{\castpagerightmargin}{0pt}
 \newlength{\castnamewidth} 		\setlength{\castnamewidth}{0.33\linewidth}
 \newcommand{\castlistoptions}{	\itemsep=0pt

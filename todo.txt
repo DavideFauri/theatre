@@ -1,9 +1,3 @@
-Iterate with whiledo and avoid recursions
-
-bolden character in cast list
-
-bolden character in title page
-
 stage directions
 
 technical directions (sound effects)
