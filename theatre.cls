@@ -4,6 +4,7 @@
 
 %\@ifundefined{if@openright}{\newif\if@openright}{} 
 
+%\RequirePackage{cm-super}			% for vectorized fonts
 \RequirePackage[T1]{fontenc}			% for bold small caps
 \RequirePackage{etoolbox, environ}	% for dynamic list of chars in each scene
 \RequirePackage{xparse}
