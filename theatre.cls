@@ -79,8 +79,9 @@
 
 % convert to internal functions
 \newcommand{\draft}[1]{				\gdef\@draftno{#1}}		% draft number
-\newcommand{\copyrightnotice}[1]{		\gdef\@crightnotice{#1}}	% copyright
-\newcommand{\address}[1]{			\gdef\@address{#1}}	% physical address
+\newcommand{\version}[1]{			\gdef\@versionno{#1}}	% version number (same as draft number)
+\newcommand{\copyrightnotice}[1]{	\gdef\@crightnotice{#1}}	% copyright
+\newcommand{\address}[1]{			\gdef\@address{#1}}	    % physical address
 \newcommand{\telephone}[1]{			\gdef\@telephone{#1}}	% telephone number
 \newcommand{\email}[1]{				\gdef\@email{#1}}		% email address
 
@@ -92,7 +93,8 @@
 		\par
 		\center{\Large \@author}
 		\par\vspace{1cm}
-		\ifdefined\@draftno{\small DRAFT \@draftno}\fi
+		\ifdefined\@draftno{\small DRAFT \@draftno}\fi%
+		\ifdefined\@versionno{\small VERSION \@versionno}\fi%
 		\vfill
 		\immediate\closeout\titlecast
 		{\titlestarfont\input{\jobname-titlecast.tmp}}
