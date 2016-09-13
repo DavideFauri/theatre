@@ -1,6 +1,0 @@
-List of characters for scenes (only those in the castlist)
-
-Adding an optional argument for \scene to manually include extras in the scene castlist
-
-
-technical directions (sound effects, external conditions)
