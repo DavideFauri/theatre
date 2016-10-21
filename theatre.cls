@@ -355,7 +355,8 @@
 
 %%%%% Functions %%%%%
 
-\newcommand{\castlist}{	\if@openright	\clearpage{\thispagestyle{empty}\cleardoublepage}
+\newcommand{\castlist}{
+	\if@openright	\clearpage{\thispagestyle{empty}\cleardoublepage}
 	\else			\clearpage
 	\fi
 	\thispagestyle{empty}
