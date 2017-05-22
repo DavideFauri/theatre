@@ -67,3 +67,15 @@ A full(?) working example is provided by the `example.tex` file. I have no idea 
 * Option for two-sided printing (margins, diagram, etc)
 
 * Option for rehearsal mode (actor's lines are invisible (just use white-on-white coloring))
+
+## Various Ideas
+
+Should I repeat a character's name after a stage direction, if they continue their lines?
+
+Can there be more plays in a single document? Do they show in table of contents?
+
+Fu*k localization
+
+Create a detailed guide on how to use acts and scenes, how to define characters, bla bla bla... see thalia package
+
+Write down available options for each command, also check defaults
