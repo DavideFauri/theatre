@@ -1,0 +1,49 @@
+\documentclass{minimal}
+\usepackage{etoolbox}
+\makeatletter
+
+\newcommand{\myread}{
+	\read\tempin to \myline
+	\myline
+	}
+
+\newwrite\tempout
+\newread\tempin
+
+
+
+\begin{document}
+
+\immediate\openin\tempin=mytemp.tmp
+\openout\tempout=mytemp.tmp
+
+\listadd\mylist{}
+%\myread
+
+
+\def\mychars{\forlistloop{, }{\mylist}}
+\write\tempout{\mychars}
+Scene1\\
+\myread
+
+
+Stuff happens
+\listadd\mylist{Linda}
+\listadd\mylist{Eric}
+
+
+\def\mychars{\forlistloop{, }{\mylist}}
+\write\tempout{\mychars}
+Scene2\\
+\myread
+
+Stuff happens
+\write\tempout{Mario, Caio}
+
+
+
+
+
+\closein\tempin
+\closeout\tempout
+\end{document}
