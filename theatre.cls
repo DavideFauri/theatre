@@ -504,6 +504,7 @@
 
 \newcommand\scene[1][]{
 	\stepcounter{scenecounter}
+	\vskip 1.0\baselineskip
 	\@scene{#1}
 	\parskip 0.5\baselineskip
 }
