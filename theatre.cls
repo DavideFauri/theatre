@@ -454,10 +454,10 @@
 }
 
 \newcommand\@openact{
-	\if@openright	\clearpage{\thispagestyle{empty}\cleardoublepage}
+	\if@openright	\clearpage{\cleardoublepage}%\thispagestyle{empty}\cleardoublepage}
 	\else			\clearpage
 	\fi
-	\thispagestyle{plain}									% no header
+	% \thispagestyle{plain}									% no header
 }
 
 \newcommand\@act[1]{
