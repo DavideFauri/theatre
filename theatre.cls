@@ -542,7 +542,7 @@
 	\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char\Roman{charstemp}}
 		{}
 		{\if@atleastonechar{,\ }\fi
-		\@nameuse{@char\Roman{charstemp}name}%
+		{\@nameuse{@char\Roman{charstemp}name}}%
 		\@atleastonechartrue}%
 	%
 	\ifnum\value{charstemp}<\value{totalcharcounter}%
