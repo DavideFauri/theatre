@@ -35,6 +35,41 @@
 % if mirror flag, turn all drawings upside down
 % if drawing flag, turn off/on drawings and tikz dependency (remember the group chars brace!)
 
+
+%%%%%%%%%%%%%%%%%%%%%%%		Names (english)
+
+\newcommand{\casttitlename}{Cast of Characters}
+\newcommand{\acttitlename}{Act}
+\newcommand{\scenetitlename}{Scene}
+\newcommand{\scriptendlocalizedtext}{The End}
+\newcommand{\draftlocalizedtext}{DRAFT}
+\newcommand{\versionlocalizedtext}{VERSION}
+
+%%%%%%%%%%%%%%%%%%%%%%%		Names (multi-lang)
+
+\AtBeginDocument{
+  \@ifpackagewith{babel}{english}{%
+    \addto\captionsitalian{%
+    	\renewcommand*\casttitlename{Cast of Characters}%
+    	\renewcommand*\acttitlename{Act}%
+    	\renewcommand*\scenetitlename{Scene}%
+    	\renewcommand*\scriptendlocalizedtext{The End}%
+    	\renewcommand*\draftlocalizedtext{DRAFT}%
+    	\renewcommand*\versionlocalizedtext{VERSION}%
+    }%
+  }{}
+  \@ifpackagewith{babel}{italian}{%
+    \addto\captionsitalian{%
+    	\renewcommand*\casttitlename{Personaggi}%
+    	\renewcommand*\acttitlename{Atto}%
+    	\renewcommand*\scenetitlename{Scena}%
+    	\renewcommand*\scriptendlocalizedtext{Fine}%
+    	\renewcommand*\draftlocalizedtext{BOZZA}%
+    	\renewcommand*\versionlocalizedtext{VERSION}%
+    }%
+  }{}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%		Font styles
 
 \parindent 0pt
@@ -47,15 +82,12 @@
 
 \newcommand{\titlestarfont}{\starfont\Huge}
 
-\newcommand{\casttitlename}{Cast of Characters}
 \newcommand{\casttitlefont}{\scshape\Large}
 \newcommand{\castfont}{\namefont}
 \newcommand{\caststarfont}{\starfont\large}
 
-\newcommand{\acttitlename}{Act}
 \newcommand{\acttitlefont}{\scshape\Large}
 
-\newcommand{\scenetitlename}{Scene}
 \newcommand{\scenetitlefont}{\scshape\large}
 \newcommand{\scenecastfont}{\namefont\small}
 
@@ -99,8 +131,8 @@
 		\par
 		\center{\Large \@author}
 		\par\vspace{1cm}
-		\ifdefined\@draftno{\small DRAFT \@draftno}\fi%
-		\ifdefined\@versionno{\small VERSION \@versionno}\fi%
+		\ifdefined\@draftno{\small \MakeUppercase\draftlocalizedtext\ \@draftno}\fi%
+		\ifdefined\@versionno{\small \MakeUppercase\versionlocalizedtext\ \@versionno}\fi%
 		\vfill
 		\immediate\closeout\titlecast
 		{\titlestarfont\input{\jobname-titlecast.tmp}}
@@ -108,7 +140,7 @@
 		\begin{flushright}
 			\ifdefined\@crightnotice{\copyright\ \@crightnotice\par}\fi
 			\ifdefined\@address{\@address\par}\fi
-			\ifdefined\@telephone{tel. \@telephone\par}\fi
+			\ifdefined\@telephone{\@telephone\par}\fi
 			\ifdefined\@email{\@email}\fi
 		\end{flushright}
 	\end{titlepage}
@@ -544,7 +576,7 @@
 \AtEndDocument{
 	\vspace{1.6ex}
 	\centering
-	\textsc{The End}
+	\textsc{\scriptendlocalizedtext}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%		Helper functions
