@@ -18,12 +18,18 @@
 
 \IfFileExists{silence.sty}{
 	\RequirePackage{silence}
-	\message{^^J
-			SUPPRESSING ALL "MULTIPLE LABELS" WARNINGS
-			^^J}
+	\typeout{^^J^^J
+			SUPPRESSING ALL "MULTIPLY-DEFINED" WARNINGS
+			^^J^^J}
 	\WarningFilter{latex}{There were multiply-defined labels}
 	\WarningFilter{latex}{Label `act}
-}{}
+}{
+	\ClassWarningNoLine{theatre}{%
+		Large number of warnings incoming! \MessageBreak
+		To suppress warnings, use the 'silence'\MessageBreak
+		package%
+	}
+}
 \ProcessOptions\relax		% ignore all options
 
 % if mirror flag, turn all drawings upside down
