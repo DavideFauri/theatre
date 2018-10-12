@@ -1,6 +1,6 @@
-TSWLatexianTemp_*.*
 *.aux
 .texpadtmp
 *.tmp
 *.log
 *.synctex.gz
+*.todo
