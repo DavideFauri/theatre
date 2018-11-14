@@ -1,0 +1,71 @@
+\documentclass[]{theatre}
+\usepackage[utf8]{inputenc}
+% \usepackage{showframe}
+
+\title{Sample script}
+\author{Arthur McAuthor}
+\draft{1}
+
+\copyrightnotice{William \& Susan}
+\address{Baker St., 221}
+\telephone{123456789}
+\email{info@willsueyou.com}
+
+\character[LYNDA Brent][Homeowner]{Lynda}{lynda}
+\character*[SUSAN FakeSurname][Homeowner, Lynda's neighbor]{Susan}{sue}
+\character[RODERICK Carnegie][A circus performer]{Rod}{rod}
+\character[BERYL][Social Security employee, Sickness and Disability division]{Beryl}{beryl}
+\chargroup[Waiters]{
+	\gcharacter*[WAITER 1]{Waiter 1}{waiterone}
+	\gcharacter[WAITER 2]{Waiter 2}{waitertwo}
+}
+
+
+\begin{document}
+\maketitle
+\castlist
+%\tableofcontents
+
+\act
+\scene
+
+% TODO: stage direction
+% \stagedir Set in 1950’s style diner, “McDenny’s”,  in the present day England. BERYL is sitting at the back of a “u” shaped booth. She is tucking into a large burger and reading a gas bill
+
+% TODO: multiple characters in same stage direction
+% \lyndado, \suedo and \roddo enter.
+
+% TODO: referring to other people using macros, so we can change names later
+\lynda (speaking to SUSAN and ROD as they make their way over to BERYL) ...put your back into it man, I said, use some elbow grease, don’t just tickle it, I want to see my face in it... Hi Beryl...
+\beryldo hides the burger under the table
+\beryl Oh hi
+\sue (sits at the table at the left side of BERYL) He was doing his best.
+\rod Hi...
+\lynda Hi!
+
+% TODO introduce the CURTAIN
+\act[Rod is dead]
+\scene[But he got better]
+
+\character{Waiters}{waiteronetwo}
+% TODO fix the missing space for actions of a new character
+\waiteronetwodo enter carrying a large portion of fries.
+
+\waiterone (to Beryl) your large fries Madam
+\character{Lynda / Beryl}{lyndaberyl}
+\lyndaberyl ?
+\beryl They're not mine
+\waiteronetwo Sorry?
+\beryl No, you must be mixing me up with someone else.
+\waitertwo (looks around the empty room)
+\beryl I didn't order any.
+\waiterone Oh, but you did
+
+\scene
+
+% TODO: list characters in a scene by order of appearance
+\beryl Uhm...
+\rod Ehm...
+
+
+\end{document}
