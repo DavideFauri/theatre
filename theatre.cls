@@ -320,7 +320,7 @@
 	\parindent 0pt
 	\leftskip 0.15\textwidth
 	\rightskip\leftskip
-	{\actionfont#1}
+	{\actionfont\vskip1ex(#1)\vskip1ex}
 	\endgroup
 	\par
 	\@hasbeenformattedfalse
