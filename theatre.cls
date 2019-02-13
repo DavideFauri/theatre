@@ -1,6 +1,5 @@
 \ProvidesClass{theatre}[2015/10/03 v0.55 Script Format for stage plays]
 \NeedsTeXFormat{LaTeX2e}
-\LoadClass[12pt, oneside, a4paper, openright]{book}
 
 %\@ifundefined{if@openright}{\newif\if@openright}{} 
 
@@ -30,7 +29,14 @@
 		package%
 	}
 }
-\ProcessOptions\relax		% ignore all options
+
+%% Default options: 12pt, a4paper, oneside, openright
+%% It always opens right
+\PassOptionsToClass{12pt, a4paper, oneside, openright}{extbook}
+\DeclareOption{openany}{\OptionNotUsed}
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{extbook}}
+\ProcessOptions\relax		% process all options
+\LoadClass{extbook}
 
 % if mirror flag, turn all drawings upside down
 % if drawing flag, turn off/on drawings and tikz dependency (remember the group chars brace!)
