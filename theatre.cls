@@ -215,6 +215,7 @@
 			\catcode`\^^M=\active%
 			\catcode`\(=\active\relax%
 			\catcode`\)=\active\relax%
+			\catcode`\_=\active\relax%
 			\formatdialogue{\namefont#1}%
 		}\fi
 	}
@@ -257,6 +258,7 @@
 			\catcode`\^^M=\active\relax%
 			\catcode`\(=\active\relax%
 			\catcode`\)=\active\relax%
+			\catcode`\_=\active\relax%
 			\formatdialogue{\@nameuse{@char#1font}#2}%
 		}\fi
 	}
@@ -599,6 +601,19 @@
 \@setupparen
 \gdef(#1){{\itshape\char`\( #1\char`\) }}
 \@cleanupparen
+
+%%%%%%%%%%%%%%%%%%%%%%%		Underlined emphasis in lines
+
+\def\@setupemph{
+	\catcode`\_=\active\relax
+}
+\def\@cleanupemph{
+	\catcode`\_=12\relax
+}
+
+\@setupemph
+\gdef_#1_{\underline{#1}}
+\@cleanupemph
 
 
 %%%%%%%%%%%%%%%%%%%%%%%		Stage directions
