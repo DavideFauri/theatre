@@ -109,7 +109,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%		Flags
 
 \newif\if@atleastonechar
-\newif\if@thischarstar		% checks if the current character is starred
+\newif\if@thischarstar				% checks if the current character is starred
+\newif\if@hasbeenformatted 		% checks if the current paragraph has been formatted as a line or an action
 
 %%%%%%%%%%%%%%%%%%%%%%%		Temp files
 
@@ -205,15 +206,27 @@
 \newcommand{\@ction}{do}					% suffix for stage directions command, ex. \timdo
 
 \def\char@simplemacros#1#2{				% args={Timothy}{tim}
-	\@namedef{#2}{
-		\begingroup
-		\catcode`\^^M=\active%
-		\formatdialogue{\namefont#1}%
+	\@namedef{#2}{%
+		\if@hasbeenformatted{%
+			{\namefont#1}%
+		}\else\@firstofone{
+			\@hasbeenformattedtrue
+			\begingroup
+			\catcode`\^^M=\active%
+			\catcode`\(=\active\relax%
+			\catcode`\)=\active\relax%
+			\formatdialogue{\namefont#1}%
+		}\fi
 	}
-	\@namedef{#2\@ction}{
-		\begingroup
-		\catcode`\^^M=\active%
-		\formataction{\namefont#1\xspace}%
+	\@namedef{#2\@ction}{%
+		\if@hasbeenformatted{%
+			{\namefont#1}%
+		}\else\@firstofone{
+			\@hasbeenformattedtrue
+			\begingroup
+			\catcode`\^^M=\active\relax%
+			\formataction{\namefont#1}%
+		}\fi
 	}
 }
 
@@ -235,25 +248,34 @@
 		\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char#1}
 			{\refstepcounter{entrancecounter}
 			\label{act\Roman{actcounter}scene\Roman{scenecounter}char#1}}
-			{}
-		\begingroup
-		\catcode`\^^M=\active\relax%
-		\catcode`\(=\active\relax%
-		\catcode`\)=\active\relax%
-		\formatdialogue{\@nameuse{@char#1font}#2}%
+			{}%
+		\if@hasbeenformatted{%
+			\@nameuse{@char#1font}#2
+		}\else\@firstofone{
+			\@hasbeenformattedtrue
+			\begingroup
+			\catcode`\^^M=\active\relax%
+			\catcode`\(=\active\relax%
+			\catcode`\)=\active\relax%
+			\formatdialogue{\@nameuse{@char#1font}#2}%
+		}\fi
 	}
 
 	% defines \timdo, expanding (just) the tokens that require totalcharcounter
-	\csgdef{#3\@ction}{
-		
+	\csgdef{#3\@ction}{%
 		% if it's the first time that the macro is called in the scene, create label
 		\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char#1}
 			{\refstepcounter{entrancecounter}
 			\label{act\Roman{actcounter}scene\Roman{scenecounter}char#1}}
-			{}
-		\begingroup
-		\catcode`\^^M=\active\relax%
-		\formataction{\@nameuse{@char#1font}#2\space}%
+			{}%
+		\if@hasbeenformatted{%
+			\@nameuse{@char#1font}#2
+		}\else\@firstofone{
+			\@hasbeenformattedtrue
+			\begingroup
+			\catcode`\^^M=\active\relax%
+			\formataction{\@nameuse{@char#1font}#2}%
+		}\fi
 	}
 
 	\settowidth{\@thischarlength}{\@nameuse{@char#1font}#2\space}	% get max length to properly indent
@@ -281,6 +303,7 @@
 	#2
 	\endgroup
 	\par
+	\@hasbeenformattedfalse
 }
 \endgroup
 
@@ -294,6 +317,7 @@
 	{\actionfont#1}
 	\endgroup
 	\par
+	\@hasbeenformattedfalse
 }
 \endgroup
 
@@ -563,20 +587,28 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%		Parentheticals
 
-\def\@setupparen{		\catcode`\(=\active\relax
-					\catcode`\)=\active\relax
+\def\@setupparen{
+	\catcode`\(=\active\relax
+	\catcode`\)=\active\relax
 }
-\def\@cleanupparen{	\catcode`\(=12\relax
-					\catcode`\)=12\relax
+\def\@cleanupparen{
+	\catcode`\(=12\relax
+	\catcode`\)=12\relax
 }
 
 \@setupparen
-\gdef(#1){{\char`\( \itshape#1\char`\) }}
+\gdef(#1){{\itshape\char`\( #1\char`\) }}
 \@cleanupparen
+
 
 %%%%%%%%%%%%%%%%%%%%%%%		Stage directions
 
-
+\def\action#1{
+	\@hasbeenformattedtrue
+	\begingroup
+	\catcode`\^^M=\active\relax%
+	\formataction{#1}%
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%		Opening and technical directions
 
@@ -604,7 +636,7 @@
 \newlength{\maxcharlength}\setlength{\maxcharlength}{0pt}
 \newlength{\@thischarlength}
 
-
+\long\def\@firstofone#1{#1}% Copied from the gobble package
 
 
 
