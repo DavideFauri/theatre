@@ -204,6 +204,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%		Character macros
 
 \newcommand{\@ction}{do}					% suffix for stage directions command, ex. \timdo
+\newcommand{\@font}{font}					% suffix for the font of each particular character, ex. {\timfont TINY TIM}
 
 \def\char@simplemacros#1#2{				% args={Timothy}{tim}
 	\@namedef{#2}{%
@@ -243,6 +244,9 @@
 		\csgdef{@char#1font}{\namefont}
 	}\fi
 	
+	% defines \timfont, for ease of use within the script
+	\csgdef{#3\@font}{\@nameuse{@char#1font}}
+
 	% defines \tim, expanding (just) the tokens that require totalcharcounter
 	\csgdef{#3}{%
 		% if it's the first time that the macro is called in the scene, create label
