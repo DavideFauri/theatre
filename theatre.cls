@@ -44,6 +44,7 @@
 \newcommand{\scriptendlocalizedtext}{The End}
 \newcommand{\draftlocalizedtext}{DRAFT}
 \newcommand{\versionlocalizedtext}{VERSION}
+\newcommand{\curtainlocalizedtext}{THE CURTAIN FALLS}
 
 %%%%%%%%%%%%%%%%%%%%%%%		Names (multi-lang)
 
@@ -56,6 +57,7 @@
     	\renewcommand*\scriptendlocalizedtext{The End}%
     	\renewcommand*\draftlocalizedtext{DRAFT}%
     	\renewcommand*\versionlocalizedtext{VERSION}%
+    	\renewcommand*\curtainlocalizedtext{THE CURTAIN FALLS}%
     }%
   }{}
   \@ifpackagewith{babel}{italian}{%
@@ -65,7 +67,8 @@
     	\renewcommand*\scenetitlename{Scena}%
     	\renewcommand*\scriptendlocalizedtext{Fine}%
     	\renewcommand*\draftlocalizedtext{BOZZA}%
-    	\renewcommand*\versionlocalizedtext{VERSION}%
+    	\renewcommand*\versionlocalizedtext{VERSIONE}%
+    	\renewcommand*\curtainlocalizedtext{CALA IL SIPARIO}
     }%
   }{}
 }
@@ -454,6 +457,13 @@
 }
 
 \newcommand\@openact{
+	\ifnum\value{actcounter}>0%
+		\vspace{1.6ex}
+		\centering
+		\textsc{\curtainlocalizedtext}
+		\par
+	\fi
+
 	\if@openright	\clearpage{\cleardoublepage}%\thispagestyle{empty}\cleardoublepage}
 	\else			\clearpage
 	\fi
@@ -575,6 +585,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%		End of script
 
 \AtEndDocument{
+	\vspace{1.6ex}
+	\centering
+	\textsc{\curtainlocalizedtext}
+	\par
 	\vspace{1.6ex}
 	\centering
 	\textsc{\scriptendlocalizedtext}
