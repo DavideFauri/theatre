@@ -271,6 +271,7 @@
 			\catcode`\)=\active\relax%
 			\catcode`\_=\active\relax%
 			\formatdialogue{{\@nameuse{@char#1font}#2}}%
+			\expandafter\@gobble
 		}\fi
 		\xspace
 	}
