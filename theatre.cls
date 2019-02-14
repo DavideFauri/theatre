@@ -1,15 +1,23 @@
-\ProvidesClass{theatre}[2015/10/03 v0.55 Script Format for stage plays]
+\ProvidesClass{theatre}[2019/02/14 v0.8 Script Format for stage plays]
 \NeedsTeXFormat{LaTeX2e}
+
+%% Default options
+\PassOptionsToClass{12pt, a4paper, oneside, openright}{extbook}
+\DeclareOption{openany}{\OptionNotUsed}
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{extbook}}
+\ProcessOptions\relax		% process all options
+\LoadClass{extbook}
+
 
 %\@ifundefined{if@openright}{\newif\if@openright}{} 
 
 %\RequirePackage{cm-super}			% for vectorized fonts
 \RequirePackage[T1]{fontenc}			% for bold small caps
 \RequirePackage{etoolbox, environ}	% for dynamic list of chars in each scene
-\RequirePackage{xparse}
+\RequirePackage{xparse}		% for IfBooleanTF and other stuff
+\RequirePackage{xspace}	% add space after macro when appropriate
 %\RequirePackage{fancyhdr}
 %\RequirePackage{extramarks}
-\RequirePackage{xspace}	% add space after macro when appropriate
 %\RequirePackage{tikz}
 \RequirePackage{nameref}
 
@@ -30,13 +38,6 @@
 	}
 }
 
-%% Default options: 12pt, a4paper, oneside, openright
-%% It always opens right
-\PassOptionsToClass{12pt, a4paper, oneside, openright}{extbook}
-\DeclareOption{openany}{\OptionNotUsed}
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{extbook}}
-\ProcessOptions\relax		% process all options
-\LoadClass{extbook}
 
 % if mirror flag, turn all drawings upside down
 % if drawing flag, turn off/on drawings and tikz dependency (remember the group chars brace!)
@@ -126,12 +127,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%		Title
 
 % convert to internal functions
-\newcommand{\draft}[1]{				\gdef\@draftno{#1}}		% draft number
-\newcommand{\version}[1]{			\gdef\@versionno{#1}}	% version number (same as draft number)
+\newcommand{\draft}[1]{						\gdef\@draftno{#1}}		% draft number
+\newcommand{\version}[1]{					\gdef\@versionno{#1}}	% version number (same as draft number)
 \newcommand{\copyrightnotice}[1]{	\gdef\@crightnotice{#1}}	% copyright
-\newcommand{\address}[1]{			\gdef\@address{#1}}	    % physical address
-\newcommand{\telephone}[1]{			\gdef\@telephone{#1}}	% telephone number
-\newcommand{\email}[1]{				\gdef\@email{#1}}		% email address
+\newcommand{\address}[1]{					\gdef\@address{#1}}	    % physical address
+\newcommand{\telephone}[1]{				\gdef\@telephone{#1}}	% telephone number
+\newcommand{\email}[1]{						\gdef\@email{#1}}		% email address
 
 % create title page
 \renewcommand{\maketitle}{
@@ -217,7 +218,6 @@
 		\if@hasbeenformatted{%
 			{\namefont#1}%
 		}\else\@firstofone{
-			\@hasbeenformattedtrue
 			\begingroup
 			\catcode`\^^M=\active%
 			\catcode`\(=\active\relax%
@@ -230,7 +230,6 @@
 		\if@hasbeenformatted{%
 			{\namefont#1}%
 		}\else\@firstofone{
-			\@hasbeenformattedtrue
 			\begingroup
 			\catcode`\^^M=\active\relax%
 			\formataction{\namefont#1}%
@@ -255,15 +254,15 @@
 
 	% defines \tim, expanding (just) the tokens that require totalcharcounter
 	\csgdef{#3}{%
-		% if it's the first time that the macro is called in the scene, create label
 		\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char#1}
-			{\refstepcounter{entrancecounter}
-			\label{act\Roman{actcounter}scene\Roman{scenecounter}char#1}}
-			{}%
+			{% if it's the first time that the macro is called in the scene, create label
+				\refstepcounter{entrancecounter}%
+				\label{act\Roman{actcounter}scene\Roman{scenecounter}char#1}%
+			}{%
+			}%
 		\if@hasbeenformatted{%
 			\@nameuse{@char#1font}#2
 		}\else\@firstofone{
-			\@hasbeenformattedtrue
 			\begingroup
 			\catcode`\^^M=\active\relax%
 			\catcode`\(=\active\relax%
@@ -275,15 +274,15 @@
 
 	% defines \timdo, expanding (just) the tokens that require totalcharcounter
 	\csgdef{#3\@ction}{%
-		% if it's the first time that the macro is called in the scene, create label
 		\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char#1}
-			{\refstepcounter{entrancecounter}
-			\label{act\Roman{actcounter}scene\Roman{scenecounter}char#1}}
-			{}%
+			{% if it's the first time that the macro is called in the scene, create label
+				\refstepcounter{entrancecounter}%
+				\label{act\Roman{actcounter}scene\Roman{scenecounter}char#1}}%
+			{%
+			}%
 		\if@hasbeenformatted{%
 			\@nameuse{@char#1font}#2
 		}\else\@firstofone{
-			\@hasbeenformattedtrue
 			\begingroup
 			\catcode`\^^M=\active\relax%
 			\formataction{\@nameuse{@char#1font}#2}%
@@ -302,14 +301,15 @@
 \begingroup
 \catcode`\^^M=\active
 \long\gdef\formatdialogue#1#2^^M{
+	\@hasbeenformattedtrue
 	
 	\parindent-\maxcharlength		% for indenting correctly the char name
 	\leftskip\maxcharlength
 	
 	\begin{minipage}[l]{\maxcharlength}
-	\raggedright					% for long charnames
-	%\leftmargini=0pt
-	#1
+		\raggedright					% for long charnames
+		% \leftmargini=0pt
+		#1
 	\end{minipage}%
 	%
 	#2
@@ -323,6 +323,7 @@
 \begingroup
 \catcode`\^^M=\active%
 \long\gdef\formataction#1^^M{
+	\@hasbeenformattedtrue
 	\parindent 0pt
 	\leftskip 0.15\textwidth
 	\rightskip\leftskip
@@ -609,7 +610,7 @@
 }
 
 \@setupparen
-\gdef(#1){{\itshape\char`\( #1\char`\) }}
+\gdef(#1){{\itshape\char`\(#1\char`\)}}
 \@cleanupparen
 
 %%%%%%%%%%%%%%%%%%%%%%%		Underlined emphasis in lines
@@ -629,7 +630,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%		Stage directions
 
 \def\action#1{
-	\@hasbeenformattedtrue
 	\begingroup
 	\catcode`\^^M=\active\relax%
 	\formataction{#1}%
