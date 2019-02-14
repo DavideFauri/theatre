@@ -9,7 +9,7 @@
 \LoadClass{extbook}
 
 
-%\@ifundefined{if@openright}{\newif\if@openright}{} 
+%\@ifundefined{if@openright}{\newif\if@openright}{}
 
 %\RequirePackage{cm-super}			% for vectorized fonts
 \RequirePackage[T1]{fontenc}			% for bold small caps
@@ -181,7 +181,7 @@
 \def\char@castfull#1[#2]#3#4{
 	\stepcounter{castlistcounter}
 	\stepcounter{totalcharcounter}
-	
+
 	\if@thischarstar{			% add character to title page
 		\immediate\write\titlecast{#3\par}
 	}\fi
@@ -200,9 +200,9 @@
 			\csgdef{persona@\Roman{castlistcounter}}{\castfont#1}
 		}\fi
 	\fi
-	
+
 	\@namedef{description@\Roman{castlistcounter}}{#2}
-	
+
 	% first expand the totalcharcounter, then pass it as argument
 	\edef\@Romanchar{\Roman{totalcharcounter}}
 	\expandafter\char@fullmacros\expandafter{\@Romanchar}{#3}{#4}
@@ -216,7 +216,7 @@
 \def\char@simplemacros#1#2{				% args={Timothy}{tim}
 	\@namedef{#2}{%
 		\if@hasbeenformatted{%
-			{\namefont#1}%
+			\namefont#1%
 		}\else\@firstofone{
 			\begingroup
 			\catcode`\^^M=\active%
@@ -225,15 +225,17 @@
 			\catcode`\_=\active\relax%
 			\formatdialogue{\namefont#1}%
 		}\fi
+		\xspace
 	}
 	\@namedef{#2\@ction}{%
 		\if@hasbeenformatted{%
-			{\namefont#1}%
+			\namefont#1%
 		}\else\@firstofone{
 			\begingroup
 			\catcode`\^^M=\active\relax%
 			\formataction{\namefont#1}%
 		}\fi
+		\xspace
 	}
 }
 
@@ -248,7 +250,7 @@
 	}\else{
 		\csgdef{@char#1font}{\namefont}
 	}\fi
-	
+
 	% defines \timfont, for ease of use within the script
 	\csgdef{#3\@font}{\@nameuse{@char#1font}}
 
@@ -261,15 +263,16 @@
 			}{%
 			}%
 		\if@hasbeenformatted{%
-			\@nameuse{@char#1font}#2
+			\@nameuse{@char#1font}#2%
 		}\else\@firstofone{
 			\begingroup
 			\catcode`\^^M=\active\relax%
 			\catcode`\(=\active\relax%
 			\catcode`\)=\active\relax%
 			\catcode`\_=\active\relax%
-			\formatdialogue{\@nameuse{@char#1font}#2}%
+			\formatdialogue{{\@nameuse{@char#1font}#2}}%
 		}\fi
+		\xspace
 	}
 
 	% defines \timdo, expanding (just) the tokens that require totalcharcounter
@@ -281,12 +284,13 @@
 			{%
 			}%
 		\if@hasbeenformatted{%
-			\@nameuse{@char#1font}#2
+			\@nameuse{@char#1font}#2%
 		}\else\@firstofone{
 			\begingroup
 			\catcode`\^^M=\active\relax%
-			\formataction{\@nameuse{@char#1font}#2}%
+			\formataction{{\@nameuse{@char#1font}#2}}%
 		}\fi
+		\xspace
 	}
 
 	\settowidth{\@thischarlength}{\@nameuse{@char#1font}#2\space}	% get max length to properly indent
@@ -302,10 +306,10 @@
 \catcode`\^^M=\active
 \long\gdef\formatdialogue#1#2^^M{
 	\@hasbeenformattedtrue
-	
+
 	\parindent-\maxcharlength		% for indenting correctly the char name
 	\leftskip\maxcharlength
-	
+
 	\begin{minipage}[l]{\maxcharlength}
 		\raggedright					% for long charnames
 		% \leftmargini=0pt
@@ -327,7 +331,13 @@
 	\parindent 0pt
 	\leftskip 0.15\textwidth
 	\rightskip\leftskip
-	{\actionfont\vskip1ex(#1)\vskip1ex}
+	\vskip1ex
+	\begin{minipage}[l]{0.7\textwidth}%
+		\raggedright%
+		\actionfont%
+		(\unexpanded#1)
+	\end{minipage}
+	\vskip1ex
 	\endgroup
 	\par
 	\@hasbeenformattedfalse
@@ -396,11 +406,11 @@
 			\end{list}
 			\end{minipage}
 		\end{lrbox}
-		
+
 		\parbox{\castnamewidth}{
 			\hfuzz=\wd\tbox		% ignore overfull warnings
 			\usebox{\tbox}%		% comment to avoid spurious space
- 			$\left.\rule{0pt}{\ht\tbox}\right\}$	
+ 			$\left.\rule{0pt}{\ht\tbox}\right\}$
 		}%						% comment to avoid spurious space
 	}
 }{}
@@ -449,7 +459,7 @@
 	\vspace*{\beforecasttitleskip}					% print title
 	{\centering\casttitlefont\casttitlename\par}
 	\par\nobreak\vskip\aftercasttitleskip
-	
+
 	\begin{list}{}{	\leftmargin=\castpageleftmargin	% create list of characters
 				\rightmargin=\castpagerightmargin
 				\castlistoptions}
@@ -532,7 +542,7 @@
 	\else
 		\actseparator\par\nobreak#1
 	\fi
-		
+
 	\par\nobreak\vskip\afteractskip}
 }
 
@@ -566,7 +576,7 @@
 	\fi
 
 	\@titlescene{#1}								% print whole scene title
-	
+
 	%\@afterindentfalse								% prevent indentation after title
 }
 
@@ -578,7 +588,7 @@
 	\else
 		\sceneseparator#1
 	\fi}%
-	
+
 	\par\nobreak{\recurse@scenecharlist}%
 	\par\nobreak\vskip\aftersceneskip}
 }
