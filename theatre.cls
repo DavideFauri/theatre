@@ -1,16 +1,6 @@
 \ProvidesClass{theatre}[2019/02/14 v0.8 Script Format for stage plays]
 \NeedsTeXFormat{LaTeX2e}
 
-%% Default options
-\PassOptionsToClass{12pt, a4paper, oneside, openright}{extbook}
-\DeclareOption{openany}{\OptionNotUsed}
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{extbook}}
-\ProcessOptions\relax		% process all options
-\LoadClass{extbook}
-
-
-%\@ifundefined{if@openright}{\newif\if@openright}{}
-
 %\RequirePackage{cm-super}			% for vectorized fonts
 \RequirePackage[T1]{fontenc}			% for bold small caps
 \RequirePackage{etoolbox, environ}	% for dynamic list of chars in each scene
@@ -20,6 +10,24 @@
 %\RequirePackage{extramarks}
 %\RequirePackage{tikz}
 \RequirePackage{nameref}
+
+%%%%%%%%%%%%%%%%%%%%%%%		Flags
+
+\newif\if@isdraft							% checks if the current document is a draft
+\newif\if@atleastonechar
+\newif\if@thischarstar				% checks if the current character is starred
+\newif\if@hasbeenformatted 		% checks if the current paragraph has been formatted as a line or an action
+
+%%%%%%%%%%%%%%%%%%%%%%%		Default options
+
+\PassOptionsToClass{12pt, a4paper, oneside, openright}{extbook}
+
+\DeclareOption{openany}{\OptionNotUsed}
+\DeclareOption{draft}{\@isdrafttrue\PassOptionsToClass{draft}{extbook}}
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{extbook}}
+
+\ProcessOptions\relax		% process all options
+\LoadClass{extbook}
 
 %%%%%%%%%%%%%%%%%%%%%%%		Options
 
@@ -118,12 +126,6 @@
 \newcounter{casttemp}
 \newcounter{charstemp}
 
-%%%%%%%%%%%%%%%%%%%%%%%		Flags
-
-\newif\if@atleastonechar
-\newif\if@thischarstar				% checks if the current character is starred
-\newif\if@hasbeenformatted 		% checks if the current paragraph has been formatted as a line or an action
-
 %%%%%%%%%%%%%%%%%%%%%%%		Temp files
 
 \newwrite\titlecast
@@ -147,14 +149,14 @@
 		\par
 		\center{\Large \@author}
 		\par\vspace{1cm}
-		\ifdefined\@draftno{\small \MakeUppercase\draftlocalizedtext\ \@draftno}\fi%
-		\ifdefined\@versionno{\small \MakeUppercase\versionlocalizedtext\ \@versionno}\fi%
+		\if@isdraft{\small \MakeUppercase\draftlocalizedtext\ifdefined\@draftno{\space\@draftno}\fi}\fi%
+		\ifdefined\@versionno{\small \MakeUppercase\versionlocalizedtext\space\@versionno}\fi%
 		\vfill
 		\immediate\closeout\titlecast
 		{\titlestarfont\input{\jobname-titlecast.tmp}}
 		\vfill
 		\begin{flushright}
-			\ifdefined\@crightnotice{\copyright\ \@crightnotice\par}\fi
+			\ifdefined\@crightnotice{\copyright\space\@crightnotice\par}\fi
 			\ifdefined\@address{\@address\par}\fi
 			\ifdefined\@telephone{\@telephone\par}\fi
 			\ifdefined\@email{\@email}\fi
