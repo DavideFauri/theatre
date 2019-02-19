@@ -14,7 +14,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%		Flags
 
 \newif\if@isdraft							% checks if the current document is a draft
-\newif\if@atleastonechar
+\newif\if@atleastonecharbefore
 \newif\if@thischarstar				% checks if the current character is starred
 \newif\if@hasbeenformatted 		% checks if the current paragraph has been formatted as a line or an action
 
@@ -615,14 +615,15 @@
 	%
 	\@ifundefined{r@act\Roman{actcounter}scene\Roman{scenecounter}char\Roman{charstemp}}
 		{}
-		{\if@atleastonechar{,\ }\fi
+		{\if@atleastonecharbefore{,\ }\fi
 		{\@nameuse{@char\Roman{charstemp}name}}%
-		\@atleastonechartrue}%
+		\@atleastonecharbeforetrue}%
 	%
 	\ifnum\value{charstemp}<\value{totalcharcounter}%
 		\recurse@scenecharlist
 	\fi
 	\setcounter{charstemp}{0}%
+	\@atleastonecharbeforefalse
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%		Parentheticals
