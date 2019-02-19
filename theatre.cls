@@ -111,6 +111,14 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%		Lengths
 
+\newlength{\myfontsize}\setlength{\myfontsize}{\f@size pt}
+\newlength{\mybaselineskip}
+\if@isdraft{
+  	\global\setlength{\mybaselineskip}{\dimexpr \numexpr \myfontsize * 16 / 10 \relax sp}
+}\else{
+  	\global\setlength{\mybaselineskip}{\dimexpr \numexpr \myfontsize * 12 / 10 \relax sp}
+}\fi
+
 \newlength{\maxcharlength}\setlength{\maxcharlength}{0pt}
 \newlength{\@thischarlength}
 
@@ -324,6 +332,7 @@
 		#1
 	\end{minipage}%
 	%
+	\fontsize{\myfontsize}{\mybaselineskip}\selectfont % change baselineskip if draft mode is on
 	#2
 	\endgroup
 	\par
