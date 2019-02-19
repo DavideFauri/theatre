@@ -509,7 +509,7 @@
 \newlength{\beforeactskip}	\setlength{\beforeactskip}{\baselineskip}
 \newlength{\afteractskip}		\setlength{\afteractskip}{\baselineskip}
 
-\newcommand{\actseparator}{:\ }
+\newcommand{\actseparator}{:\space}
 
 %%%%% Functions %%%%%
 
@@ -537,11 +537,11 @@
 \newcommand\@act[1]{
 	\refstepcounter{actcounter}							% increment number of acts
 	\phantomsection									% for hyperref
-	\actmark{\acttitlename\ \theact}							% mark for headers
+	\actmark{\acttitlename\space\theact}							% mark for headers
 	\if\relax\detokenize{#1}\relax
-		\addcontentsline{toc}{chapter}{\acttitlename\ \theact}
+		\addcontentsline{toc}{chapter}{\acttitlename\space\theact}
 	\else
-		\addcontentsline{toc}{chapter}{\acttitlename\ \theact\actseparator#1}
+		\addcontentsline{toc}{chapter}{\acttitlename\space\theact\actseparator#1}
 	\fi
 
 	\@titleact{#1}										% print the whole act title
@@ -553,7 +553,7 @@
 \newcommand\@titleact[1]{
 	\vspace*{\beforeactskip}
 	{\parindent 0pt	\parskip 0.25\baselineskip				% zero indentation, some line skip
-	\centering\acttitlefont\acttitlename\ \theact				% print "Act III"
+	\centering\acttitlefont\acttitlename\space\theact				% print "Act III"
 	%		<---- do not remove the %!
 	\if\relax\detokenize{#1}\relax							% print act name
 	\else
@@ -570,7 +570,7 @@
 \newlength{\beforesceneskip}	\setlength{\beforesceneskip}{0pt}
 \newlength{\aftersceneskip}	\setlength{\aftersceneskip}{\baselineskip}
 
-\newcommand{\sceneseparator}{\ --\ }
+\newcommand{\sceneseparator}{\space--\space}
 
 %%%%% Functions %%%%%%
 
@@ -585,11 +585,11 @@
 
 \newcommand\@scene[1]{
 	\phantomsection								% for hyperref
-	\scenemark{\scenetitlename\ \thescene}				% mark for headers
+	\scenemark{\scenetitlename\space\thescene}				% mark for headers
 	\if\relax\detokenize{#1}\relax
-		\addcontentsline{toc}{section}{\scenetitlename\ \thescene}
+		\addcontentsline{toc}{section}{\scenetitlename\space\thescene}
 	\else
-		\addcontentsline{toc}{section}{\scenetitlename\ \thescene\sceneseparator#1}
+		\addcontentsline{toc}{section}{\scenetitlename\space\thescene\sceneseparator#1}
 	\fi
 
 	\@titlescene{#1}								% print whole scene title
@@ -599,7 +599,7 @@
 
 \newcommand\@titlescene[1]{
 	\vspace*{\beforesceneskip}
-	{\centering{\scenetitlefont\scenetitlename\ \thescene	% print "Scene 24"
+	{\centering{\scenetitlefont\scenetitlename\space\thescene	% print "Scene 24"
 	%		<---- do not remove the %!
 	\if\relax\detokenize{#1}\relax			% print scene name
 	\else
