@@ -85,7 +85,7 @@
 \parindent 0pt
 
 \newcommand{\namefont}{\scshape}
-\newcommand{\starfont}{\bf\namefont\large}
+\newcommand{\starfont}{\bf\namefont}
 
 \newcommand{\actionfont}{\it}
 \newcommand{\stagedirfont}{}
@@ -100,6 +100,11 @@
 
 \newcommand{\scenetitlefont}{\scshape\large}
 \newcommand{\scenecastfont}{\namefont\small}
+
+%%%%%%%%%%%%%%%%%%%%%%%		Lengths
+
+\newlength{\maxcharlength}\setlength{\maxcharlength}{0pt}
+\newlength{\@thischarlength}
 
 %%%%%%%%%%%%%%%%%%%%%%%		Counters
 
@@ -173,7 +178,7 @@
 }
 
 \def\char@cast[#1]{
-	\@ifnextchar[
+	\@ifnextchar[							% check for presence of [full name]
 		{\char@castfull{#1}}
 		{\char@castfull{}[#1]}	% add empty [full name] if absent
 }
@@ -668,9 +673,6 @@
 \newcommand\actmark[1]{}
 \newcommand\scenemark[1]{}
 \newcommand\castlistmark[1]{}
-
-\newlength{\maxcharlength}\setlength{\maxcharlength}{0pt}
-\newlength{\@thischarlength}
 
 \long\def\@firstofone#1{#1}% Copied from the gobble package
 
