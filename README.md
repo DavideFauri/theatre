@@ -6,32 +6,32 @@ Since it's rare for playwrights to also be experts of programming, most of the L
 It currently supports:
 
   * Cover page with title, author, copyright, draft version number and contact information;
-  * User-friendly way to declare new characters and extras;
-  * 'Personal copy' mode for one/many characters, with their name on the cover and bolded lines.
   * Automatic cast list generation, with support for group characters and character descriptions;
-  * Acts and scenes with optional titles, automatic numbering, automatic table of contents.
-  * Stage directions (for single characters only, WIP)
+  * User-friendly macros to declare main characters, character lines and stage directions; to split the script into acts and scenes; to declare minor characters and extras;
+  * Optional subtitles for acts and scenes, automatic numbering, automatic table of contents, automatic list of characters within each scene (slightly buggy);
+  * "Script personalization" for one or many characters, with their name on the cover and a bold font for every reference to them within the script (dialogue lines, stage directions, cast list, etc.). Additionally, a Python script can batch generate a personalized copy for each main character.
+  * A draft mode for preliminary table readings, with larger line skip to modify and annotate lines
 
 It will soon support:
 
-  * Larger, bolded font in cast list too for specific characters (also in title page?)
-  * Stage directions for more than one actor
   * Technical directions
+  * (Bug-free) Automatic list of characters in each scene, in order of appearance
+  * More information on headers and footers
 
 It will eventually support:
 
-  * Automatic list of characters present in each scene (still some issues)
   * Customizable formatting for all elements (titles, dialogue, stage and technical directions)
-  * A TikZ-drawn stage template before each act to annotate the stage layout (doors, furniture...)
-  * Similar smaller drawings at the right side of the page to let actors annotate their movements during scenes
-  * Landscape mode
-  * Rehearsal mode (actor's line intentionally left blank)
+  * A TikZ-drawn stage template before each act to annotate the stage layout (doors, furniture, objects...)
+  * "Director" landscape mode with stage schematic drawn on the side, to annotate character movements
+  * Rehearsal mode: actor's lines intentionally left blank
+  * Lightweight mode: only printing the pages where an actor actually appears
+  * A full user manual
 
 The class is derived both from `stage.cls` (from which I borrowed the title page) and from `dramatist.sty` (from which I borrowed everything else)
 
 ## Usage
 
-A full(?) working example is provided by the `example.tex` file. I have no idea if I'm infringing any rights.
+A full(?) working example is provided by the `example.tex` file.
 
 ## TODO list
 
@@ -45,7 +45,7 @@ A full(?) working example is provided by the `example.tex` file. I have no idea 
   * total page count
   * estimated run time (?)
   * version marking
-  
+
 * all pages:
   * header with "title - act X", page number
   * footer with version number, page number
@@ -61,7 +61,7 @@ A full(?) working example is provided by the `example.tex` file. I have no idea 
   * how to handle right-aligned technical directions?
 
 * create a `\setting` macro, which occupies a newpage: half for setting description, half for large diagram
-  
+
 * Option to landscape mode for directors (larger margins, diagrams on the side)
 
 * Option for two-sided printing (margins, diagram, etc)
